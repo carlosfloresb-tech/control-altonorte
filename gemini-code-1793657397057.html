@@ -1,0 +1,611 @@
+<!DOCTYPE html>
+<html lang="es">
+<head>
+    <meta charset="UTF-8">
+    <meta name="viewport" content="width=device-width, initial-scale=1.0, maximum-scale=1.0, user-scalable=no">
+    <title>Control Operacional - Nave Altonorte</title>
+    <script src="https://cdn.jsdelivr.net/npm/xlsx@0.18.5/dist/xlsx.full.min.js"></script>
+    <style>
+        :root {
+            --bg-color: #0f172a;
+            --card-bg: #1e293b;
+            --accent-color: #10b981;
+            --text-color: #f8fafc;
+            --text-muted: #94a3b8;
+            --border-color: #334155;
+            --danger-color: #ef4444;
+            --warning-color: #f59e0b;
+        }
+
+        body {
+            font-family: -apple-system, BlinkMacSystemFont, "Segoe UI", Roboto, Helvetica, Arial, sans-serif;
+            background-color: var(--bg-color);
+            color: var(--text-color);
+            margin: 0;
+            padding: 16px;
+            box-sizing: border-box;
+            -webkit-tap-highlight-color: transparent;
+        }
+
+        .header {
+            text-align: center;
+            padding: 15px 0;
+            border-bottom: 2px solid var(--accent-color);
+            margin-bottom: 20px;
+        }
+
+        .header h1 {
+            font-size: 1.4rem;
+            color: var(--accent-color);
+            margin: 0 0 5px 0;
+        }
+
+        .badge-offline {
+            background-color: var(--accent-color);
+            color: #000;
+            font-size: 0.8rem;
+            font-weight: bold;
+            padding: 4px 10px;
+            border-radius: 20px;
+            display: inline-block;
+        }
+
+        .card {
+            background-color: var(--card-bg);
+            border: 1px solid var(--border-color);
+            border-radius: 12px;
+            padding: 18px;
+            margin-bottom: 20px;
+            box-shadow: 0 4px 6px -1px rgba(0, 0, 0, 0.3);
+        }
+
+        .card-title {
+            font-size: 1.1rem;
+            font-weight: bold;
+            color: var(--accent-color);
+            margin-bottom: 15px;
+            display: flex;
+            align-items: center;
+            gap: 8px;
+            border-bottom: 1px solid var(--border-color);
+            padding-bottom: 8px;
+        }
+
+        .form-group {
+            margin-bottom: 14px;
+        }
+
+        label {
+            display: block;
+            font-size: 0.85rem;
+            color: var(--text-muted);
+            margin-bottom: 5px;
+            font-weight: 500;
+        }
+
+        input[type="text"], input[type="date"], input[type="time"], input[type="number"], select, textarea {
+            width: 100%;
+            padding: 12px;
+            background-color: #0f172a;
+            border: 1px solid var(--border-color);
+            border-radius: 8px;
+            color: var(--text-color);
+            font-size: 1rem;
+            box-sizing: border-box;
+        }
+
+        input:focus, select:focus, textarea:focus {
+            border-color: var(--accent-color);
+            outline: none;
+            box-shadow: 0 0 0 2px rgba(16, 185, 129, 0.2);
+        }
+
+        .grid-2 {
+            display: grid;
+            grid-template-columns: 1fr 1fr;
+            gap: 12px;
+        }
+
+        .grid-3 {
+            display: grid;
+            grid-template-columns: 1fr 1fr 1fr;
+            gap: 10px;
+        }
+
+        .btn {
+            width: 100%;
+            padding: 14px;
+            border: none;
+            border-radius: 8px;
+            font-size: 1rem;
+            font-weight: bold;
+            cursor: pointer;
+            display: flex;
+            justify-content: center;
+            align-items: center;
+            gap: 8px;
+            margin-top: 10px;
+            box-shadow: 0 2px 4px rgba(0,0,0,0.2);
+        }
+
+        .btn-primary { background-color: var(--accent-color); color: #000; }
+        .btn-danger { background-color: var(--danger-color); color: #fff; }
+        .btn-warning { background-color: var(--warning-color); color: #000; }
+
+        .history-list { list-style: none; padding: 0; margin: 0; }
+        .history-item {
+            background: #0f172a;
+            padding: 12px;
+            border-radius: 8px;
+            margin-bottom: 10px;
+            font-size: 0.85rem;
+            border-left: 4px solid var(--accent-color);
+            border: 1px solid var(--border-color);
+        }
+
+        .preview-img {
+            max-width: 100%;
+            height: auto;
+            max-height: 120px;
+            border-radius: 6px;
+            margin-top: 8px;
+            border: 1px solid var(--border-color);
+        }
+
+        .hito-box {
+            background-color: #151e32;
+            padding: 12px;
+            border-radius: 8px;
+            margin-bottom: 12px;
+            border: 1px solid #334155;
+        }
+
+        .hito-title {
+            font-size: 0.9rem;
+            font-weight: bold;
+            color: #cbd5e1;
+            margin-bottom: 8px;
+        }
+    </style>
+</head>
+<body>
+
+    <div class="header">
+        <h1>Nave Altonorte - Control Operacional</h1>
+        <span class="badge-offline">⚡ 100% Offline-First (Sin Internet)</span>
+    </div>
+
+    <!-- 1. IDENTIFICACIÓN Y SUPERVISORES -->
+    <div class="card">
+        <div class="card-title">📋 1. Identificación y Supervisores del Turno</div>
+        <div class="grid-2">
+            <div class="form-group">
+                <label>Fecha de Turno</label>
+                <input type="date" id="fechaTurno" onchange="guardarDatosLocales()">
+            </div>
+            <div class="form-group">
+                <label>Tipo de Turno</label>
+                <select id="tipoTurno" onchange="guardarDatosLocales()">
+                    <option value="TA">Turno Día (TA)</option>
+                    <option value="TB" selected>Turno Noche (TB)</option>
+                </select>
+            </div>
+        </div>
+        <div class="grid-2">
+            <div class="form-group">
+                <label>Supervisor SOP</label>
+                <input type="text" id="supSop" placeholder="Ej. Héctor Itter" oninput="guardarDatosLocales()">
+            </div>
+            <div class="form-group">
+                <label>Supervisor CRM</label>
+                <input type="text" id="supCrm" placeholder="Ej. Claudio Mora" oninput="guardarDatosLocales()">
+            </div>
+        </div>
+        <div class="grid-2">
+            <div class="form-group">
+                <label>Supervisor CAEMIN</label>
+                <input type="text" id="supCaemin" oninput="guardarDatosLocales()">
+            </div>
+            <div class="form-group">
+                <label>Supervisor Nave</label>
+                <input type="text" id="supNave" oninput="guardarDatosLocales()">
+            </div>
+        </div>
+        <div class="grid-2">
+            <div class="form-group">
+                <label>Operador Picotón</label>
+                <input type="text" id="opPicoton" oninput="guardarDatosLocales()">
+            </div>
+            <div class="form-group">
+                <label>Operador Cargador</label>
+                <input type="text" id="opCargador" oninput="guardarDatosLocales()">
+            </div>
+        </div>
+    </div>
+
+    <!-- 2. TERMOGRAFÍAS -->
+    <div class="card">
+        <div class="card-title">🌡️ 2. Registro de Termografías (°C)</div>
+        <div class="grid-2">
+            <div class="form-group">
+                <label>Equipo</label>
+                <select id="termEquipo" onchange="toggleCamposTermografia()">
+                    <option value="Picotón">Picotón</option>
+                    <option value="Cargador">Cargador</option>
+                </select>
+            </div>
+            <div class="form-group">
+                <label>CPS</label>
+                <select id="termCps">
+                    <option value="CPS-1">CPS-1</option>
+                    <option value="CPS-2">CPS-2</option>
+                    <option value="CPS-3">CPS-3</option>
+                    <option value="CPS-4">CPS-4</option>
+                </select>
+            </div>
+        </div>
+
+        <div id="camposPicoton" class="grid-3">
+            <div class="form-group">
+                <label>Flexibles (°C)</label>
+                <input type="number" id="tFlexPic" value="40.0" step="0.1">
+            </div>
+            <div class="form-group">
+                <label>Cuña (°C)</label>
+                <input type="number" id="tCunaPic" value="160.0" step="0.1">
+            </div>
+            <div class="form-group">
+                <label>Tornamesa (°C)</label>
+                <input type="number" id="tTornaPic" value="20.0" step="0.1">
+            </div>
+        </div>
+
+        <div id="camposCargador" class="grid-3" style="display:none;">
+            <div class="form-group">
+                <label>Batea (°C)</label>
+                <input type="number" id="tBateaCarg" value="140.0" step="0.1">
+            </div>
+            <div class="form-group">
+                <label>Parte Inf. (°C)</label>
+                <input type="number" id="tInfCarg" value="200.0" step="0.1">
+            </div>
+            <div class="form-group">
+                <label>Flexibles (°C)</label>
+                <input type="number" id="tFlexCarg" value="40.0" step="0.1">
+            </div>
+        </div>
+
+        <button class="btn btn-warning" onclick="agregarTermografia()">➕ Guardar Termografía</button>
+        <div style="margin-top: 12px;">
+            <ul id="listaTermografias" class="history-list"></ul>
+        </div>
+    </div>
+
+    <!-- 3. CICLOS CPS Y 7 HITOS CON COMENTARIOS -->
+    <div class="card">
+        <div class="card-title">🔄 3. Registro de Ciclo CPS, Horarios y Desviaciones</div>
+        <div class="grid-2">
+            <div class="form-group">
+                <label>CPS</label>
+                <select id="cicloCps">
+                    <option value="CPS-1">CPS-1</option>
+                    <option value="CPS-2">CPS-2</option>
+                    <option value="CPS-3">CPS-3</option>
+                    <option value="CPS-4">CPS-4</option>
+                </select>
+            </div>
+            <div class="form-group">
+                <label>ID Ciclo (ej. J-117)</label>
+                <input type="text" id="nombreCiclo" value="J-117">
+            </div>
+        </div>
+
+        <!-- HITO 1 -->
+        <div class="hito-box">
+            <div class="hito-title">1. Término retiro mazamorra desde CPS</div>
+            <div class="grid-2">
+                <input type="time" id="tMaz" value="20:25">
+                <input type="text" id="obsMaz" placeholder="Comentario / Desviación (Opcional)">
+            </div>
+        </div>
+
+        <!-- HITO 2 -->
+        <div class="hito-box">
+            <div class="hito-title">2. Bloqueo de tapas CPS</div>
+            <div class="grid-2">
+                <input type="time" id="tBloq" value="20:31">
+                <input type="text" id="obsBloq" placeholder="Comentario / Desviación (Opcional)">
+            </div>
+        </div>
+
+        <!-- HITO 3 -->
+        <div class="hito-box">
+            <div class="hito-title">3. Ingreso Picotón foso</div>
+            <div class="grid-2">
+                <input type="time" id="tIngPic" value="20:32">
+                <input type="text" id="obsIngPic" placeholder="Comentario / Desviación (Opcional)">
+            </div>
+        </div>
+
+        <!-- HITO 4 -->
+        <div class="hito-box">
+            <div class="hito-title">4. Retiro picotón foso</div>
+            <div class="grid-2">
+                <input type="time" id="tRetPic" value="20:40">
+                <input type="text" id="obsRetPic" placeholder="Comentario / Desviación (Opcional)">
+            </div>
+        </div>
+
+        <!-- HITO 5 -->
+        <div class="hito-box">
+            <div class="hito-title">5. Ingreso Cargador Foso</div>
+            <div class="grid-2">
+                <input type="time" id="tIngCarg" value="20:42">
+                <input type="text" id="obsIngCarg" placeholder="Comentario / Desviación (Opcional)">
+            </div>
+        </div>
+
+        <!-- HITO 6 -->
+        <div class="hito-box">
+            <div class="hito-title">6. Retiro de Cargador en foso</div>
+            <div class="grid-2">
+                <input type="time" id="tRetCarg" value="20:48">
+                <input type="text" id="obsRetCarg" placeholder="Comentario / Desviación (Opcional)">
+            </div>
+        </div>
+
+        <!-- HITO 7 -->
+        <div class="hito-box">
+            <div class="hito-title">7. Desbloqueo de tapas CPS</div>
+            <div class="grid-2">
+                <input type="time" id="tDesb" value="20:53">
+                <input type="text" id="obsDesb" placeholder="Comentario / Desviación (Opcional)">
+            </div>
+        </div>
+
+        <div class="grid-3">
+            <div class="form-group">
+                <label>Baldadas</label>
+                <input type="number" id="numBaldadas" value="2">
+            </div>
+            <div class="form-group">
+                <label>Toneladas</label>
+                <input type="number" id="numToneladas" value="8.0" step="0.1">
+            </div>
+            <div class="form-group">
+                <label>Temp. Mat. (°C)</label>
+                <input type="number" id="tempMaterial" value="545.7" step="0.1">
+            </div>
+        </div>
+
+        <div class="grid-2">
+            <div class="form-group">
+                <label>📸 Foto ANTES (Entrada)</label>
+                <input type="file" id="fotoEntrada" accept="image/*" capture="environment" onchange="previewImagen(this, 'prevEnt')">
+                <img id="prevEnt" class="preview-img" style="display:none;">
+            </div>
+            <div class="form-group">
+                <label>📸 Foto DESPUÉS (Salida)</label>
+                <input type="file" id="fotoSalida" accept="image/*" capture="environment" onchange="previewImagen(this, 'prevSal')">
+                <img id="prevSal" class="preview-img" style="display:none;">
+            </div>
+        </div>
+
+        <button class="btn btn-primary" onclick="agregarCiclo()">➕ Guardar Ciclo Completo en Teléfono</button>
+    </div>
+
+    <!-- 4. HISTORIAL Y EXPORTACIÓN -->
+    <div class="card">
+        <div class="card-title">📦 Historial de Ciclos Guardados</div>
+        <ul id="listaCiclos" class="history-list"></ul>
+    </div>
+
+    <div class="card">
+        <div class="card-title">📊 Exportar Reporte Consolidado</div>
+        <button class="btn btn-primary" onclick="generarExcelLocal()">📥 Generar y Descargar Excel (.xlsx)</button>
+        <button class="btn btn-danger" onclick="limpiarMemoria()" style="margin-top: 10px;">🗑️ Borrar Memoria del Turno</button>
+    </div>
+
+    <script>
+        let ciclos = JSON.parse(localStorage.getItem('altonorte_ciclos')) || [];
+        let termografias = JSON.parse(localStorage.getItem('altonorte_termografias')) || [];
+        let fotoEntradaBase64 = "";
+        let fotoSalidaBase64 = "";
+
+        document.addEventListener('DOMContentLoaded', () => {
+            document.getElementById('fechaTurno').value = localStorage.getItem('fechaTurno') || new Date().toISOString().split('T')[0];
+            document.getElementById('tipoTurno').value = localStorage.getItem('tipoTurno') || 'TB';
+            document.getElementById('supSop').value = localStorage.getItem('supSop') || '';
+            document.getElementById('supCrm').value = localStorage.getItem('supCrm') || '';
+            document.getElementById('supCaemin').value = localStorage.getItem('supCaemin') || '';
+            document.getElementById('supNave').value = localStorage.getItem('supNave') || '';
+            document.getElementById('opPicoton').value = localStorage.getItem('opPicoton') || '';
+            document.getElementById('opCargador').value = localStorage.getItem('opCargador') || '';
+            
+            renderizarHistorialCiclos();
+            renderizarHistorialTermografias();
+        });
+
+        function guardarDatosLocales() {
+            localStorage.setItem('fechaTurno', document.getElementById('fechaTurno').value);
+            localStorage.setItem('tipoTurno', document.getElementById('tipoTurno').value);
+            localStorage.setItem('supSop', document.getElementById('supSop').value);
+            localStorage.setItem('supCrm', document.getElementById('supCrm').value);
+            localStorage.setItem('supCaemin', document.getElementById('supCaemin').value);
+            localStorage.setItem('supNave', document.getElementById('supNave').value);
+            localStorage.setItem('opPicoton', document.getElementById('opPicoton').value);
+            localStorage.setItem('opCargador', document.getElementById('opCargador').value);
+        }
+
+        function toggleCamposTermografia() {
+            const eq = document.getElementById('termEquipo').value;
+            if (eq === 'Picotón') {
+                document.getElementById('camposPicoton').style.display = 'grid';
+                document.getElementById('camposCargador').style.display = 'none';
+            } else {
+                document.getElementById('camposPicoton').style.display = 'none';
+                document.getElementById('camposCargador').style.display = 'grid';
+            }
+        }
+
+        function agregarTermografia() {
+            const eq = document.getElementById('termEquipo').value;
+            const cps = document.getElementById('termCps').value;
+            let registro = { id: Date.now(), equipo: eq, cps: cps };
+
+            if (eq === 'Picotón') {
+                registro.val1 = document.getElementById('tFlexPic').value;
+                registro.val2 = document.getElementById('tCunaPic').value;
+                registro.val3 = document.getElementById('tTornaPic').value;
+                registro.labels = "Flex/Cuña/Torna";
+            } else {
+                registro.val1 = document.getElementById('tBateaCarg').value;
+                registro.val2 = document.getElementById('tInfCarg').value;
+                registro.val3 = document.getElementById('tFlexCarg').value;
+                registro.labels = "Batea/Inf/Flex";
+            }
+
+            termografias.push(registro);
+            localStorage.setItem('altonorte_termografias', JSON.stringify(termografias));
+            renderizarHistorialTermografias();
+            alert('¡Termografía guardada correctamente!');
+        }
+
+        function renderizarHistorialTermografias() {
+            const lista = document.getElementById('listaTermografias');
+            if (termografias.length === 0) {
+                lista.innerHTML = '<li style="color:var(--text-muted); font-size:0.85rem;">Sin termografías registradas.</li>';
+                return;
+            }
+            lista.innerHTML = termografias.map(t => `
+                <li class="history-item">
+                    <strong>${t.equipo} - ${t.cps}</strong> (${t.labels}): ${t.val1}°C / ${t.val2}°C / ${t.val3}°C
+                </li>
+            `).join('');
+        }
+
+        function previewImagen(input, targetId) {
+            const preview = document.getElementById(targetId);
+            if (input.files && input.files[0]) {
+                const reader = new FileReader();
+                reader.onload = function(e) {
+                    preview.src = e.target.result;
+                    preview.style.display = 'block';
+                    if (targetId === 'prevEnt') fotoEntradaBase64 = e.target.result;
+                    if (targetId === 'prevSal') fotoSalidaBase64 = e.target.result;
+                }
+                reader.readAsDataURL(input.files[0]);
+            }
+        }
+
+        function agregarCiclo() {
+            const ciclo = {
+                id: Date.now(),
+                cps: document.getElementById('cicloCps').value,
+                nombre: document.getElementById('nombreCiclo').value,
+                tMaz: document.getElementById('tMaz').value,
+                obsMaz: document.getElementById('obsMaz').value,
+                tBloq: document.getElementById('tBloq').value,
+                obsBloq: document.getElementById('obsBloq').value,
+                tIngPic: document.getElementById('tIngPic').value,
+                obsIngPic: document.getElementById('obsIngPic').value,
+                tRetPic: document.getElementById('tRetPic').value,
+                obsRetPic: document.getElementById('obsRetPic').value,
+                tIngCarg: document.getElementById('tIngCarg').value,
+                obsIngCarg: document.getElementById('obsIngCarg').value,
+                tRetCarg: document.getElementById('tRetCarg').value,
+                obsRetCarg: document.getElementById('obsRetCarg').value,
+                tDesb: document.getElementById('tDesb').value,
+                obsDesb: document.getElementById('obsDesb').value,
+                baldadas: document.getElementById('numBaldadas').value,
+                toneladas: document.getElementById('numToneladas').value,
+                tempMat: document.getElementById('tempMaterial').value,
+                fotoEntrada: fotoEntradaBase64,
+                fotoSalida: fotoSalidaBase64
+            };
+
+            ciclos.push(ciclo);
+            localStorage.setItem('altonorte_ciclos', JSON.stringify(ciclos));
+            renderizarHistorialCiclos();
+            alert(`¡Ciclo ${ciclo.nombre} (${ciclo.cps}) guardado con éxito en el teléfono!`);
+            
+            document.getElementById('prevEnt').style.display = 'none';
+            document.getElementById('prevSal').style.display = 'none';
+            fotoEntradaBase64 = "";
+            fotoSalidaBase64 = "";
+        }
+
+        function renderizarHistorialCiclos() {
+            const lista = document.getElementById('listaCiclos');
+            if (ciclos.length === 0) {
+                lista.innerHTML = '<li style="color:var(--text-muted); font-size:0.85rem;">No hay ciclos ingresados todavía.</li>';
+                return;
+            }
+            lista.innerHTML = ciclos.map(c => `
+                <li class="history-item">
+                    <strong>${c.cps} (${c.nombre})</strong> | Maz: ${c.tMaz} | Bloq: ${c.tBloq} | Ret Carg: ${c.tRetCarg}<br>
+                    Baldadas: ${c.baldadas} | Ton: ${c.toneladas} | Temp. Mat: ${c.tempMat}°C
+                </li>
+            `).join('');
+        }
+
+        function generarExcelLocal() {
+            if (ciclos.length === 0 && termografias.length === 0) {
+                alert('No hay información suficiente para generar el reporte.');
+                return;
+            }
+
+            const data = [
+                ["CONTROL OPERACIONAL NAVE ALTONORTE"],
+                ["Fecha", document.getElementById('fechaTurno').value, "Turno", document.getElementById('tipoTurno').value],
+                ["Sup. SOP", document.getElementById('supSop').value, "Sup. CRM", document.getElementById('supCrm').value],
+                ["Sup. CAEMIN", document.getElementById('supCaemin').value, "Sup. Nave", document.getElementById('supNave').value],
+                ["Op. Picotón", document.getElementById('opPicoton').value, "Op. Cargador", document.getElementById('opCargador').value],
+                [],
+                ["--- TERMOGRAFÍAS REGISTRADAS ---"],
+                ["Equipo", "CPS", "Lectura 1 (°C)", "Lectura 2 (°C)", "Lectura 3 (°C)"]
+            ];
+
+            termografias.forEach(t => {
+                data.push([t.equipo, t.cps, t.val1, t.val2, t.val3]);
+            });
+
+            data.push([]);
+            data.push(["--- CICLOS OPERACIONALES Y COMENTARIOS DE DESVIACIÓN ---"]);
+
+            ciclos.forEach(c => {
+                data.push([`CPS: ${c.cps}`, `Ciclo: ${c.nombre}`]);
+                data.push(["Hito Cronológico", "Hora", "Comentario / Desviación"]);
+                data.push(["Término retiro mazamorra desde CPS", c.tMaz, c.obsMaz]);
+                data.push(["Bloqueo de tapas CPS", c.tBloq, c.obsBloq]);
+                data.push(["Ingreso Picotón foso", c.tIngPic, c.obsIngPic]);
+                data.push(["Retiro Picotón foso", c.tRetPic, c.obsRetPic]);
+                data.push(["Ingreso Cargador Foso", c.tIngCarg, c.obsIngCarg]);
+                data.push(["Retiro de Cargador en foso", c.tRetCarg, c.obsRetCarg]);
+                data.push(["Desbloqueo de tapas CPS", c.tDesb, c.obsDesb]);
+                data.push(["Baldadas", c.baldadas, "Toneladas", c.toneladas, "Temp. Material (°C)", c.tempMat]);
+                data.push([]);
+            });
+
+            const ws = XLSX.utils.aoa_to_sheet(data);
+            const wb = XLSX.utils.book_new();
+            XLSX.utils.book_append_sheet(wb, ws, "Control Operacional");
+
+            const fecha = document.getElementById('fechaTurno').value;
+            const turno = document.getElementById('tipoTurno').value;
+            XLSX.writeFile(wb, `Control_Nave_${fecha}_${turno}.xlsx`);
+        }
+
+        function limpiarMemoria() {
+            if (confirm('¿Deseas limpiar todos los datos guardados de este turno?')) {
+                localStorage.removeItem('altonorte_ciclos');
+                localStorage.removeItem('altonorte_termografias');
+                ciclos = [];
+                termografias = [];
+                renderizarHistorialCiclos();
+                renderizarHistorialTermografias();
+            }
+        }
+    </script>
+</body>
+</html>
