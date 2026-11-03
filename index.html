@@ -415,7 +415,7 @@
             </div>
         </div>
 
-        <!-- SELECTOR DUAL DE FOTOS (FOTOTECA O CÁMARA) -->
+        <!-- SELECTOR DUAL DE FOTOS -->
         <div class="grid-2">
             <div class="form-group">
                 <label>📸 Foto ANTES (Fototeca o Cámara)</label>
@@ -446,12 +446,21 @@
     </div>
 
     <script>
-        let ciclos = JSON.parse(localStorage.getItem('altonorte_ciclos')) || [];
-        let termografias = JSON.parse(localStorage.getItem('altonorte_termografias')) || [];
+        // Inicialización robusta con manejo de errores de storage
+        let ciclos = [];
+        let termografias = [];
+        try {
+            ciclos = JSON.parse(localStorage.getItem('altonorte_ciclos')) || [];
+            termografias = JSON.parse(localStorage.getItem('altonorte_termografias')) || [];
+        } catch(e) {
+            ciclos = [];
+            termografias = [];
+        }
+
         let fotoEntradaBase64 = "";
         let fotoSalidaBase64 = "";
 
-        document.addEventListener('DOMContentLoaded', () => {
+        window.onload = function() {
             document.getElementById('fechaTurno').value = localStorage.getItem('fechaTurno') || new Date().toISOString().split('T')[0];
             document.getElementById('tipoTurno').value = localStorage.getItem('tipoTurno') || 'TB';
             document.getElementById('supSop').value = localStorage.getItem('supSop') || 'Héctor Itter';
@@ -470,7 +479,7 @@
 
             renderizarHistorialCiclos();
             renderizarHistorialTermografias();
-        });
+        };
 
         function guardarEstadoLocal() {
             localStorage.setItem('fechaTurno', document.getElementById('fechaTurno').value);
@@ -523,6 +532,7 @@
 
         function renderizarHistorialTermografias() {
             const lista = document.getElementById('listaTermografias');
+            if (!lista) return;
             if (termografias.length === 0) {
                 lista.innerHTML = '<li style="color:var(--text-muted); font-size:0.8rem;">Sin termografías ingresadas.</li>';
                 return;
@@ -589,15 +599,20 @@
             };
 
             ciclos.push(ciclo);
-            localStorage.setItem('altonorte_ciclos', JSON.stringify(ciclos));
+            try {
+                localStorage.setItem('altonorte_ciclos', JSON.stringify(ciclos));
+            } catch (err) {
+                console.error("Error guardando en localStorage:", err);
+            }
             
-            // Forzamos actualización visual inmediata en pantalla
             renderizarHistorialCiclos();
+            alert(`¡Ciclo ${ciclo.nombre} (${ciclo.cps}) guardado correctamente!`);
 
-            alert(`¡Ciclo ${ciclo.nombre} (${ciclo.cps}) guardado correctamente en pantalla!`);
-
+            // Limpieza de campos de fotos
             document.getElementById('prevEnt').style.display = 'none';
             document.getElementById('prevSal').style.display = 'none';
+            document.getElementById('fotoEntrada').value = "";
+            document.getElementById('fotoSalida').value = "";
             fotoEntradaBase64 = "";
             fotoSalidaBase64 = "";
         }
