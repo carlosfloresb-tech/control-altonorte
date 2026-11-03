@@ -3,8 +3,8 @@
 <head>
     <meta charset="UTF-8">
     <meta name="viewport" content="width=device-width, initial-scale=1.0, maximum-scale=1.0, user-scalable=no">
-    <title>Control Operacional - Nave Altonorte (Matriz Oficial)</title>
-    <!-- SheetJS con soporte para lectura/escritura de plantillas estilizadas -->
+    <title>Control Operacional - Nave Altonorte</title>
+    <!-- Librería SheetJS para manejo de Excel en el navegador del celular -->
     <script src="https://cdn.jsdelivr.net/npm/xlsx@0.18.5/dist/xlsx.full.min.js"></script>
     <style>
         :root {
@@ -25,6 +25,7 @@
             margin: 0;
             padding: 16px;
             box-sizing: border-box;
+            -webkit-tap-highlight-color: transparent;
         }
 
         .header {
@@ -55,6 +56,7 @@
             border-radius: 10px;
             padding: 14px;
             margin-bottom: 16px;
+            box-shadow: 0 4px 6px -1px rgba(0, 0, 0, 0.3);
         }
 
         .card-title {
@@ -77,12 +79,12 @@
 
         input[type="text"], input[type="date"], input[type="time"], input[type="number"], select, textarea {
             width: 100%;
-            padding: 10px;
+            padding: 11px;
             background-color: #0f172a;
             border: 1px solid var(--border-color);
             border-radius: 6px;
             color: var(--text-color);
-            font-size: 0.9rem;
+            font-size: 0.95rem;
             box-sizing: border-box;
         }
 
@@ -91,10 +93,10 @@
 
         .btn {
             width: 100%;
-            padding: 12px;
+            padding: 13px;
             border: none;
             border-radius: 6px;
-            font-size: 0.9rem;
+            font-size: 0.95rem;
             font-weight: bold;
             cursor: pointer;
             margin-top: 8px;
@@ -135,7 +137,7 @@
         .preview-img {
             max-width: 100%;
             height: auto;
-            max-height: 100px;
+            max-height: 110px;
             border-radius: 6px;
             margin-top: 6px;
             border: 1px solid var(--border-color);
@@ -145,33 +147,33 @@
 <body>
 
     <div class="header">
-        <h1>Nave Altonorte - Control Operacional</h1>
-        <span class="badge-offline">⚡ Matriz Oficial con Estilos y Fotos</span>
+        <h1>Nave Altonorte - Terreno</h1>
+        <span class="badge-offline">⚡ Aplicación Móvil de Turno</span>
     </div>
 
     <!-- 1. IDENTIFICACIÓN -->
     <div class="card">
         <div class="card-title">📋 1. Identificación y Personal del Turno</div>
         <div class="grid-2">
-            <div class="form-group"><label>Fecha de Turno</label><input type="date" id="fechaTurno"></div>
+            <div class="form-group"><label>Fecha de Turno</label><input type="date" id="fechaTurno" onchange="guardarLocal()"></div>
             <div class="form-group"><label>Tipo de Turno</label>
-                <select id="tipoTurno">
+                <select id="tipoTurno" onchange="guardarLocal()">
                     <option value="TA">Turno Día (TA)</option>
                     <option value="TB" selected>Turno Noche (TB)</option>
                 </select>
             </div>
         </div>
         <div class="grid-2">
-            <div class="form-group"><label>Supervisor SOP</label><input type="text" id="supSop" value="Héctor Itter"></div>
-            <div class="form-group"><label>Supervisor CRM</label><input type="text" id="supCrm" value="Claudio Mora"></div>
+            <div class="form-group"><label>Supervisor SOP</label><input type="text" id="supSop" value="Héctor Itter" oninput="guardarLocal()"></div>
+            <div class="form-group"><label>Supervisor CRM</label><input type="text" id="supCrm" value="Claudio Mora" oninput="guardarLocal()"></div>
         </div>
         <div class="grid-2">
-            <div class="form-group"><label>Supervisor CAEMIN</label><input type="text" id="supCaemin" value="Roberto Castillo"></div>
-            <div class="form-group"><label>Supervisor Nave</label><input type="text" id="supNave" value="Carlos Flores"></div>
+            <div class="form-group"><label>Supervisor CAEMIN</label><input type="text" id="supCaemin" value="Roberto Castillo" oninput="guardarLocal()"></div>
+            <div class="form-group"><label>Supervisor Nave</label><input type="text" id="supNave" value="Carlos Flores" oninput="guardarLocal()"></div>
         </div>
         <div class="grid-2">
-            <div class="form-group"><label>Operador Picotón</label><input type="text" id="opPicoton" value="Marcelo Faundez"></div>
-            <div class="form-group"><label>Operador Cargador</label><input type="text" id="opCargador" value="Julio Miranda"></div>
+            <div class="form-group"><label>Operador Picotón</label><input type="text" id="opPicoton" value="Marcelo Faundez" oninput="guardarLocal()"></div>
+            <div class="form-group"><label>Operador Cargador</label><input type="text" id="opCargador" value="Julio Miranda" oninput="guardarLocal()"></div>
         </div>
     </div>
 
@@ -180,31 +182,31 @@
         <div class="card-title">⚙️ 2. Checklist Operacional de Equipos</div>
         <div class="grid-2">
             <div class="form-group"><label>Cargador 637 (Operativo)</label>
-                <select id="estCarg637"><option value="Revisado por Caemin">Revisado por Caemin</option><option value="Pendiente de revisión por Caemin">Pendiente de revisión por Caemin</option><option value="Fuera de servicio">Fuera de servicio</option></select>
+                <select id="estCarg637" onchange="guardarLocal()"><option value="Revisado por Caemin">Revisado por Caemin</option><option value="Pendiente de revisión por Caemin">Pendiente de revisión por Caemin</option><option value="Fuera de servicio">Fuera de servicio</option></select>
             </div>
             <div class="form-group"><label>Picotón 855 (Operativo)</label>
-                <select id="estPic855"><option value="Revisado por Caemin">Revisado por Caemin</option><option value="Pendiente de revisión por Caemin" selected>Pendiente de revisión por Caemin</option><option value="Fuera de servicio">Fuera de servicio</option></select>
+                <select id="estPic855" onchange="guardarLocal()"><option value="Revisado por Caemin">Revisado por Caemin</option><option value="Pendiente de revisión por Caemin" selected>Pendiente de revisión por Caemin</option><option value="Fuera de servicio">Fuera de servicio</option></select>
             </div>
         </div>
         <div class="grid-2">
             <div class="form-group"><label>Cargador 627 (Stand-by)</label>
-                <select id="estCarg627"><option value="Revisado por Caemin">Revisado por Caemin</option><option value="Pendiente de revisión por Caemin">Pendiente de revisión por Caemin</option><option value="Fuera de servicio" selected>Fuera de servicio</option></select>
+                <select id="estCarg627" onchange="guardarLocal()"><option value="Revisado por Caemin">Revisado por Caemin</option><option value="Pendiente de revisión por Caemin">Pendiente de revisión por Caemin</option><option value="Fuera de servicio" selected>Fuera de servicio</option></select>
             </div>
             <div class="form-group"><label>Picotón 854 (Stand-by)</label>
-                <select id="estPic854"><option value="Revisado por Caemin" selected>Revisado por Caemin</option><option value="Pendiente de revisión por Caemin">Pendiente de revisión por Caemin</option><option value="Fuera de servicio">Fuera de servicio</option></select>
+                <select id="estPic854" onchange="guardarLocal()"><option value="Revisado por Caemin" selected>Revisado por Caemin</option><option value="Pendiente de revisión por Caemin">Pendiente de revisión por Caemin</option><option value="Fuera de servicio">Fuera de servicio</option></select>
             </div>
         </div>
         <div class="grid-2">
             <div class="form-group"><label>Camión Aljibe (M-8358)</label>
-                <select id="estAljibe"><option value="Operativo" selected>Operativo</option><option value="Pendiente de revisión por Caemin">Pendiente de revisión por Caemin</option><option value="Fuera de servicio">Fuera de servicio</option></select>
+                <select id="estAljibe" onchange="guardarLocal()"><option value="Operativo" selected>Operativo</option><option value="Pendiente de revisión por Caemin">Pendiente de revisión por Caemin</option><option value="Fuera de servicio">Fuera de servicio</option></select>
             </div>
-            <div class="form-group"><label>Pérdida de Señal (Minutos)</label><input type="number" id="minTeleop" value="0"></div>
+            <div class="form-group"><label>Pérdida de Señal (Minutos)</label><input type="number" id="minTeleop" value="0" oninput="guardarLocal()"></div>
         </div>
     </div>
 
     <!-- 3. TERMOGRAFÍAS -->
     <div class="card">
-        <div class="card-title">🌡️ 3. Termografías (°C)</div>
+        <div class="card-title">🌡️ 3. Registro de Termografías (°C)</div>
         <div class="grid-2">
             <div class="form-group"><label>Equipo</label><select id="termEquipo" onchange="toggleTermo()"><option value="Picotón">Picotón</option><option value="Cargador">Cargador</option></select></div>
             <div class="form-group"><label>CPS</label><select id="termCps"><option value="CPS-1">CPS-1</option><option value="CPS-2" selected>CPS-2</option><option value="CPS-3">CPS-3</option><option value="CPS-4">CPS-4</option></select></div>
@@ -223,12 +225,12 @@
         <ul id="listaTermografias" class="history-list" style="margin-top:10px;"></ul>
     </div>
 
-    <!-- 4. REGISTRO DE CICLOS Y FOTOGRAFÍAS -->
+    <!-- 4. CICLOS Y FOTOGRAFÍAS CON CÁMARA DIRECTA -->
     <div class="card">
-        <div class="card-title">🔄 4. Registro de Ciclo CPS y Fotografías</div>
+        <div class="card-title">🔄 4. Registro de Ciclo CPS y Fotografías de Terreno</div>
         <div class="grid-2">
             <div class="form-group"><label>CPS</label><select id="cicloCps"><option value="CPS-1">CPS-1</option><option value="CPS-2" selected>CPS-2</option><option value="CPS-3">CPS-3</option><option value="CPS-4">CPS-4</option></select></div>
-            <div class="form-group"><label>ID Ciclo (ej. J-117)</label><input type="text" id="nombreCiclo" value="J-117"></div>
+            <div class="form-group"><label>ID Ciclo</label><input type="text" id="nombreCiclo" value="J-117"></div>
         </div>
 
         <div class="hito-box"><div class="hito-title">1. Término retiro mazamorra</div><input type="time" id="tMaz" value="20:25"></div>
@@ -245,46 +247,66 @@
             <div class="form-group"><label>Temp. (°C)</label><input type="number" id="tempMaterial" value="545.7" step="0.1"></div>
         </div>
 
+        <!-- CÁMARA O GALERÍA DIRECTA DEL CELULAR -->
         <div class="grid-2" style="margin-top: 10px;">
             <div class="form-group">
-                <label>📸 Foto ANTES (Cámara / Galería)</label>
-                <input type="file" id="fotoEntrada" accept="image/*" onchange="previewImg(this, 'prevEnt')">
+                <label>📸 Foto ANTES (Cámara Celular)</label>
+                <input type="file" id="fotoEntrada" accept="image/*" capture="environment" onchange="previewImg(this, 'prevEnt', 'antes')">
                 <img id="prevEnt" class="preview-img" style="display:none;">
             </div>
             <div class="form-group">
-                <label>📸 Foto DESPUÉS (Cámara / Galería)</label>
-                <input type="file" id="fotoSalida" accept="image/*" onchange="previewImg(this, 'prevSal')">
+                <label>📸 Foto DESPUÉS (Cámara Celular)</label>
+                <input type="file" id="fotoSalida" accept="image/*" capture="environment" onchange="previewImg(this, 'prevSal', 'despues')">
                 <img id="prevSal" class="preview-img" style="display:none;">
             </div>
         </div>
 
-        <button class="btn btn-primary" onclick="guardarCicloEnPantalla()">➕ GUARDAR CICLO CON FOTOS</button>
+        <button class="btn btn-primary" onclick="guardarCicloEnPantalla()">➕ GUARDAR CICLO EN CELULAR</button>
     </div>
 
     <!-- 5. HISTORIAL DE CICLOS -->
     <div class="card">
-        <div class="card-title">📦 Ciclos Almacenados en Teléfono</div>
+        <div class="card-title">📦 Ciclos Registrados en Memoria</div>
         <ul id="listaCiclos" class="history-list"></ul>
     </div>
 
     <!-- 6. EXPORTAR -->
     <div class="card">
         <div class="card-title">📊 Generar Planilla Oficial Altonorte</div>
-        <button class="btn btn-primary" onclick="descargarExcelConPlantillaBase64()">📥 Descargar Excel Oficial Estilizado (.xlsx)</button>
-        <button class="btn btn-danger" onclick="limpiarTodo()" style="margin-top:8px;">🗑️ Borrar Memoria del Turno</button>
+        <button class="btn btn-primary" onclick="descargarExcelMovil()">📥 Descargar Excel Oficial (.xlsx)</button>
+        <button class="btn btn-danger" onclick="limpiarTodo()" style="margin-top:8px;">🗑️ Borrar Memoria</button>
     </div>
 
     <script>
-        let misCiclos = [];
-        let misTermografias = [];
-        let fotoAntesBase64 = "";
-        let fotoDespuesBase64 = "";
+        let misCiclos = JSON.parse(localStorage.getItem('altonorte_ciclos')) || [];
+        let misTermografias = JSON.parse(localStorage.getItem('altonorte_termografias')) || [];
+        let fotoAntesB64 = "";
+        let fotoDespuesB64 = "";
 
         window.onload = function() {
-            document.getElementById('fechaTurno').value = new Date().toISOString().split('T')[0];
+            document.getElementById('fechaTurno').value = localStorage.getItem('fechaTurno') || new Date().toISOString().split('T')[0];
+            if(localStorage.getItem('tipoTurno')) document.getElementById('tipoTurno').value = localStorage.getItem('tipoTurno');
+            if(localStorage.getItem('supSop')) document.getElementById('supSop').value = localStorage.getItem('supSop');
+            if(localStorage.getItem('supCrm')) document.getElementById('supCrm').value = localStorage.getItem('supCrm');
+            if(localStorage.getItem('supCaemin')) document.getElementById('supCaemin').value = localStorage.getItem('supCaemin');
+            if(localStorage.getItem('supNave')) document.getElementById('supNave').value = localStorage.getItem('supNave');
+            if(localStorage.getItem('opPicoton')) document.getElementById('opPicoton').value = localStorage.getItem('opPicoton');
+            if(localStorage.getItem('opCargador')) document.getElementById('opCargador').value = localStorage.getItem('opCargador');
+            
             actualizarListaCiclos();
             actualizarListaTermo();
         };
+
+        function guardarLocal() {
+            localStorage.setItem('fechaTurno', document.getElementById('fechaTurno').value);
+            localStorage.setItem('tipoTurno', document.getElementById('tipoTurno').value);
+            localStorage.setItem('supSop', document.getElementById('supSop').value);
+            localStorage.setItem('supCrm', document.getElementById('supCrm').value);
+            localStorage.setItem('supCaemin', document.getElementById('supCaemin').value);
+            localStorage.setItem('supNave', document.getElementById('supNave').value);
+            localStorage.setItem('opPicoton', document.getElementById('opPicoton').value);
+            localStorage.setItem('opCargador', document.getElementById('opCargador').value);
+        }
 
         function toggleTermo() {
             const eq = document.getElementById('termEquipo').value;
@@ -308,8 +330,9 @@
             }
 
             misTermografias.push({ equipo: eq, cps: cps, v1: val1, v2: val2, v3: val3 });
+            localStorage.setItem('altonorte_termografias', JSON.stringify(misTermografias));
             actualizarListaTermo();
-            alert(`¡Termografía de ${eq} (${cps}) registrada con éxito!`);
+            alert(`Termografía registrada con éxito.`);
         }
 
         function actualizarListaTermo() {
@@ -329,18 +352,19 @@
 
         function eliminarTermo(idx) {
             misTermografias.splice(idx, 1);
+            localStorage.setItem('altonorte_termografias', JSON.stringify(misTermografias));
             actualizarListaTermo();
         }
 
-        function previewImg(input, targetId) {
+        function previewImg(input, targetId, tipo) {
             if (input.files && input.files[0]) {
                 const reader = new FileReader();
                 reader.onload = function(e) {
                     const prev = document.getElementById(targetId);
                     prev.src = e.target.result;
                     prev.style.display = 'block';
-                    if (targetId === 'prevEnt') fotoAntesBase64 = e.target.result;
-                    if (targetId === 'prevSal') fotoDespuesBase64 = e.target.result;
+                    if (tipo === 'antes') fotoAntesB64 = e.target.result;
+                    if (tipo === 'despues') fotoDespuesB64 = e.target.result;
                 }
                 reader.readAsDataURL(input.files[0]);
             }
@@ -365,20 +389,21 @@
                 baldadas: document.getElementById('numBaldadas').value,
                 toneladas: document.getElementById('numToneladas').value,
                 tempMat: document.getElementById('tempMaterial').value,
-                fotoAnt: fotoAntesBase64,
-                fotoDes: fotoDespuesBase64
+                fotoAnt: fotoAntesB64,
+                fotoDes: fotoDespuesB64
             };
 
             misCiclos.push(c);
+            localStorage.setItem('altonorte_ciclos', JSON.stringify(misCiclos));
             actualizarListaCiclos();
-            alert(`¡Ciclo ${c.nombre} (${c.cps}) guardado con fotos adjuntas!`);
+            alert(`¡Ciclo ${c.nombre} (${c.cps}) guardado en el teléfono!`);
 
             document.getElementById('prevEnt').style.display = 'none';
             document.getElementById('prevSal').style.display = 'none';
             document.getElementById('fotoEntrada').value = "";
             document.getElementById('fotoSalida').value = "";
-            fotoAntesBase64 = "";
-            fotoDespuesBase64 = "";
+            fotoAntesB64 = "";
+            fotoDespuesB64 = "";
         }
 
         function actualizarListaCiclos() {
@@ -401,6 +426,7 @@
 
         function eliminarCiclo(i) {
             misCiclos.splice(i, 1);
+            localStorage.setItem('altonorte_ciclos', JSON.stringify(misCiclos));
             actualizarListaCiclos();
         }
 
@@ -414,46 +440,27 @@
             return Math.round((d2 - d1) / (1000 * 60));
         }
 
-        // GENERADOR INTELIGENTE BASADO EN PLANTILLA ESTILIZADA
-        async function descargarExcelConPlantillaBase64() {
+        function descargarExcelMovil() {
             const fecha = document.getElementById('fechaTurno').value || "2026-10-25";
             const turno = document.getElementById('tipoTurno').value || "TB";
 
             try {
-                // Generamos una estructura limpia pero usando estilos predefinidos o simulando la plantilla oficial
-                // Como SheetJS permite leer archivos template si se cargan por fetch, y si falla usamos la matriz con formato enriquecido:
-                let wb;
-                try {
-                    let response = await fetch('Control_Nave_25-10_TB_correcto.xlsx');
-                    if(response.ok) {
-                        let buf = await response.arrayBuffer();
-                        wb = XLSX.read(buf, {type: 'array', cellStyles: true});
-                    }
-                } catch(e) {
-                    // Si el navegador bloquea fetch local, construimos un libro corporativo con la estructura exacta de celdas
-                    wb = XLSX.utils.book_new();
-                }
+                let wb = XLSX.utils.book_new();
+                let data = Array(105).fill(null).map(() => Array(8).fill(""));
 
-                let wsName = wb && wb.SheetNames.length > 0 ? wb.SheetNames[0] : 'Matriz Oficial';
-                let ws = wb && wb.Sheets[wsName] ? wb.Sheets[wsName] : {};
+                data[0][1] = "Control  Operacional Supervisor Nave";
+                data[2][1] = `Fecha: ${fecha} ${turno}`;
 
-                // Si ws está vacío (creado desde cero), inicializamos celdas
-                if (!ws['!ref']) {
-                    let data = Array(105).fill(null).map(() => Array(8).fill(""));
-                    ws = XLSX.utils.aoa_to_sheet(data);
-                    ws['!cols'] = [{wch:10},{wch:35},{wch:26},{wch:16},{wch:18},{wch:29},{wch:24}];
-                }
+                data[3][1] = "Supervisor SOP:"; data[3][2] = document.getElementById('supSop').value;
+                data[3][3] = "Supervisor CRM:"; data[3][4] = document.getElementById('supCrm').value;
+                data[3][5] = "Operador Picotón: "; data[3][6] = document.getElementById('opPicoton').value;
 
-                // Inyección quirúrgica de valores respetando la matriz corporativa
-                ws['B3'] = { t: 's', v: `Fecha: ${fecha} ${turno}` };
-                ws['C4'] = { t: 's', v: document.getElementById('supSop').value };
-                ws['E4'] = { t: 's', v: document.getElementById('supCrm').value };
-                ws['G4'] = { t: 's', v: document.getElementById('opPicoton').value };
+                data[4][1] = "Supervisor Caemin:"; data[4][2] = document.getElementById('supCaemin').value;
+                data[4][3] = "Supervisor Nave:"; data[4][4] = document.getElementById('supNave').value;
+                data[4][5] = "Operador Cargador: "; data[4][6] = document.getElementById('opCargador').value;
 
-                ws['C5'] = { t: 's', v: document.getElementById('supCaemin').value };
-                ws['E5'] = { t: 's', v: document.getElementById('supNave').value };
-                ws['G5'] = { t: 's', v: document.getElementById('opCargador').value };
-
+                data[6][1] = "Actividades"; data[6][2] = "Controles"; data[6][3] = "Responsable"; data[6][4] = "Estatus"; data[6][5] = "Comentarios ";
+                
                 const c637 = document.getElementById('estCarg637').value;
                 const p855 = document.getElementById('estPic855').value;
                 const c627 = document.getElementById('estCarg627').value;
@@ -461,36 +468,46 @@
                 const aljibe = document.getElementById('estAljibe').value;
                 const teleop = document.getElementById('minTeleop').value;
 
-                ws['F8'] = { t: 's', v: `Operativos:\nCargador M-637: ${c637}.\nPicotón M-855: ${p855}.\nCamión Aljibe (M-8358): ${aljibe}.\n\nStand by:\nPicotón 854: ${p854}.\nCargador 627: ${c627}.\n\nTiempo en teleoperación: ${teleop} min por pérdida de señal.` };
-                ws['F14'] = { t: 's', v: `Camión Aljibe M-8358: ${aljibe}` };
+                const textoChecklist = `Operativos:\nCargador M-637: ${c637}.\nPicotón M-855: ${p855}.\nCamión Aljibe (M-8358): ${aljibe}.\n\nStand by:\nPicotón 854: ${p854}.\nCargador 627: ${c627}.\n\nTiempo en teleoperación: ${teleop} min por pérdida de señal.`;
 
-                // Termografías Picotón (filas 18-20)
+                data[7][1] = "Control previo inicio de Actividades. \n(Inicio de Turno)";
+                data[7][2] = "Check list Operacional Cargador y Picoton";
+                data[7][3] = "Op. Maq "; data[7][4] = "✓";
+                data[7][5] = textoChecklist;
+
+                data[8][2] = "Asegurar condición de equipos por Caemin "; data[8][3] = "Caemin"; data[8][4] = "✓";
+                data[9][1] = "Control previo al retiro del material "; data[9][2] = "Confirmar tiempo de al menos 10 minutos desde el termino de picado del foso"; data[9][3] = "Sup. Nave"; data[9][4] = "✓"; data[9][5] = "Se evalua el ingreso inmediato de cargador, por disminucion de material en foso.";
+                data[10][2] = "Verificar visualmente que el material en el foso este sólido (no líquido)"; data[10][3] = "Sup. Nave"; data[10][4] = "✓"; data[10][5] = "No se detecta material en estado líquido.";
+                data[11][1] = "Control durante retiro y traslado de material "; data[11][2] = "Verificar que no exista presencia de llamas, humo o indicios de ignición"; data[11][3] = "Sup. Nave"; data[11][4] = "✓"; data[11][5] = "No se aprecian fosos con materiales liquidos ni presencia de llamas en equipos";
+                data[12][1] = "Control del tratamiento del material en explanada"; data[12][2] = "Asegurar que la disposición del material favorezca el enfriamiento y que este en estado sólido (no líquido)."; data[12][3] = "Sup. Nave"; data[12][4] = "✓"; data[12][5] = "Se mantiene area despejada, se realiza retiro de material de explanada";
+                data[13][2] = "Verificar que camion aljibe este disponible durante toda la actividad"; data[13][3] = "Sup. Nave"; data[13][4] = "✓"; data[13][5] = `Camión Aljibe M-8358: ${aljibe}`;
+
+                // Termografías
+                data[15][1] = "Termografia (°C)";
+                data[16][1] = "Picoton"; data[16][2] = "Flexibles"; data[16][3] = "cuña"; data[16][4] = "tornamesa";
                 let tPic = misTermografias.filter(t => t.equipo === 'Picotón');
-                for (let i = 0; i < tPic.length && i < 3; i++) {
-                    let r = 18 + i;
-                    ws[`B${r}`] = { t: 's', v: tPic[i].cps };
-                    ws[`C${r}`] = { t: 'n', v: tPic[i].v1 };
-                    ws[`D${r}`] = { t: 'n', v: tPic[i].v2 };
-                    ws[`E${r}`] = { t: 'n', v: tPic[i].v3 };
+                for(let i=0; i<tPic.length && i<3; i++) {
+                    data[17+i][1] = tPic[i].cps; data[17+i][2] = tPic[i].v1; data[17+i][3] = tPic[i].v2; data[17+i][4] = tPic[i].v3;
                 }
 
-                // Termografías Cargador (filas 23-25)
+                data[21][1] = "Cargador"; data[21][2] = "Batea"; data[21][3] = "Parte inferior"; data[21][4] = "Flexibles interiores";
                 let tCarg = misTermografias.filter(t => t.equipo === 'Cargador');
-                for (let i = 0; i < tCarg.length && i < 3; i++) {
-                    let r = 23 + i;
-                    ws[`B${r}`] = { t: 's', v: tCarg[i].cps };
-                    ws[`C${r}`] = { t: 'n', v: tCarg[i].v1 };
-                    ws[`D${r}`] = { t: 'n', v: tCarg[i].v2 };
-                    ws[`E${r}`] = { t: 'n', v: tCarg[i].v3 };
+                for(let i=0; i<tCarg.length && i<3; i++) {
+                    data[22+i][1] = tCarg[i].cps; data[22+i][2] = tCarg[i].v1; data[22+i][3] = tCarg[i].v2; data[22+i][4] = tCarg[i].v3;
                 }
 
-                // Ciclos CPS y Referencias Fotográficas Institucionales
-                let rowsBase = [28, 40, 52];
+                // Ciclos CPS
+                let rowOffsets = [27, 39, 51];
                 for (let i = 0; i < 3; i++) {
-                    let rb = rowsBase[i];
+                    let r = rowOffsets[i];
                     let c = misCiclos[i];
 
-                    if (!c) continue;
+                    if (!c) {
+                        data[r][1] = "CPS"; data[r][2] = `CPS-${i+2}`;
+                        data[r+1][1] = "Ciclo"; data[r+1][2] = "";
+                        data[r+2][1] = "CPS"; data[r+2][2] = "Fecha"; data[r+2][3] = "Minutos"; data[r+2][4] = "Baldadas "; data[r+2][5] = "Comentarios desviaciones";
+                        continue;
+                    }
 
                     let m2 = calcMin(c.tMaz, c.tBloq);
                     let m3 = calcMin(c.tBloq, c.tIngPic);
@@ -498,54 +515,49 @@
                     let m5 = calcMin(c.tRetPic, c.tIngCarg);
                     let m6 = calcMin(c.tIngCarg, c.tRetCarg);
                     let m7 = calcMin(c.tRetCarg, c.tDesb);
-                    let totalMin = m2 + m3 + m4 + m5 + m6 + m7;
+                    let mTotal = m2 + m3 + m4 + m5 + m6 + m7;
 
-                    ws[`C${rb}`] = { t: 's', v: c.cps };
-                    ws[`C${rb+1}`] = { t: 's', v: c.nombre };
+                    data[r][1] = "CPS"; data[r][2] = c.cps;
+                    data[r+1][1] = "Ciclo"; data[r+1][2] = c.nombre;
+                    data[r+2][1] = "CPS"; data[r+2][2] = "Fecha"; data[r+2][3] = "Minutos"; data[r+2][4] = "Baldadas "; data[r+2][5] = "Comentarios desviaciones";
 
-                    ws[`C${rb+3}`] = { t: 's', v: c.tMaz }; ws[`D${rb+3}`] = { t: 'n', v: 0 };
-                    ws[`C${rb+4}`] = { t: 's', v: c.tBloq }; ws[`D${rb+4}`] = { t: 'n', v: m2 };
-                    ws[`C${rb+5}`] = { t: 's', v: c.tIngPic }; ws[`D${rb+5}`] = { t: 'n', v: m3 };
-                    ws[`C${rb+6}`] = { t: 's', v: c.tRetPic }; ws[`D${rb+6}`] = { t: 'n', v: m4 };
-                    
-                    ws[`C${rb+7}`] = { t: 's', v: c.tIngCarg }; ws[`D${rb+7}`] = { t: 'n', v: m5 };
-                    ws[`G${rb+7}`] = { t: 'n', v: parseFloat(c.tempMat) || 0 };
-
-                    ws[`C${rb+8}`] = { t: 's', v: c.tRetCarg }; ws[`D${rb+8}`] = { t: 'n', v: m6 };
-                    ws[`E${rb+8}`] = { t: 'n', v: parseFloat(c.baldadas) || 0 };
-                    ws[`F${rb+8}`] = { t: 'n', v: parseFloat(c.toneladas) || 0 };
-
-                    ws[`C${rb+9}`] = { t: 's', v: c.tDesb }; ws[`D${rb+9}`] = { t: 'n', v: m7 };
-                    ws[`D${rb+10}`] = { t: 'n', v: totalMin };
-
-                    // Inyección explícita de registros fotográficos en celdas institucionales
-                    if (i === 0) {
-                        if (c.fotoAnt) ws['B66'] = { t: 's', v: `📸 [EVIDENCIA FOTO ANTES] ${c.cps} (${c.nombre}) - Adjunta en Turno` };
-                        if (c.fotoDes) ws['E66'] = { t: 's', v: `📸 [EVIDENCIA FOTO DESPUÉS] ${c.cps} (${c.nombre}) - Adjunta en Turno` };
-                    } else if (i === 1) {
-                        if (c.fotoAnt) ws['B80'] = { t: 's', v: `📸 [EVIDENCIA FOTO ANTES] ${c.cps} (${c.nombre}) - Adjunta en Turno` };
-                        if (c.fotoDes) ws['E80'] = { t: 's', v: `📸 [EVIDENCIA FOTO DESPUÉS] ${c.cps} (${c.nombre}) - Adjunta en Turno` };
-                    } else if (i === 2) {
-                        if (c.fotoAnt) ws['B97'] = { t: 's', v: `📸 [EVIDENCIA FOTO ANTES] ${c.cps} (${c.nombre}) - Adjunta en Turno` };
-                        if (c.fotoDes) ws['E97'] = { t: 's', v: `📸 [EVIDENCIA FOTO DESPUÉS] ${c.cps} (${c.nombre}) - Adjunta en Turno` };
-                    }
+                    data[r+3][1] = "Termino retiro mazamorra desde CPS"; data[r+3][2] = c.tMaz; data[r+3][3] = 0;
+                    data[r+4][1] = "Bloqueo de tapas CPS"; data[r+4][2] = c.tBloq; data[r+4][3] = m2;
+                    data[r+5][1] = "Ingreso Picoton foso"; data[r+5][2] = c.tIngPic; data[r+5][3] = m3;
+                    data[r+6][1] = "Retiro picoton foso"; data[r+6][2] = c.tRetPic; data[r+6][3] = m4;
+                    data[r+7][1] = "Ingreso Cargador Foso"; data[r+7][2] = c.tIngCarg; data[r+7][3] = m5; data[r+7][5] = "Temperatura material retirado (°C)"; data[r+7][6] = c.tempMat;
+                    data[r+8][1] = "Retiro de Cargador en foso"; data[r+8][2] = c.tRetCarg; data[r+8][3] = m6; data[r+8][4] = parseFloat(c.baldadas)||0; data[r+8][5] = parseFloat(c.toneladas)||0; data[r+8][6] = "Ton. ";
+                    data[r+9][1] = "Desbloqueo de tapas CPS"; data[r+9][2] = c.tDesb; data[r+9][3] = m7;
+                    data[r+10][1] = "Total"; data[r+10][3] = mTotal;
                 }
 
-                if (!wb.Sheets[wsName]) {
-                    XLSX.utils.book_append_sheet(wb, ws, `${fecha} ${turno}`);
-                }
+                // Referencias de Fotos con indicación de adjuntas en terreno
+                data[65][1] = misCiclos[0] && misCiclos[0].fotoAnt ? `📸 [FOTO ANTES ADJUNTA DESDE CÁMARA] - ${misCiclos[0].cps} (${misCiclos[0].nombre})` : "📸 FOTO ANTES DE LIMPIEZA";
+                data[65][4] = misCiclos[0] && misCiclos[0].fotoDes ? `📸 [FOTO DESPUES ADJUNTA DESDE CÁMARA] - ${misCiclos[0].cps} (${misCiclos[0].nombre})` : "📸 FOTO DESPUES DE LIMPIEZA";
+                
+                data[79][1] = misCiclos[1] && misCiclos[1].fotoAnt ? `📸 [FOTO ANTES ADJUNTA DESDE CÁMARA] - ${misCiclos[1].cps} (${misCiclos[1].nombre})` : "📸 FOTO ANTES DE LIMPIEZA";
+                data[79][4] = misCiclos[1] && misCiclos[1].fotoDes ? `📸 [FOTO DESPUES ADJUNTA DESDE CÁMARA] - ${misCiclos[1].cps} (${misCiclos[1].nombre})` : "📸 FOTO DESPUES DE LIMPIEZA";
+                
+                data[96][1] = misCiclos[2] && misCiclos[2].fotoAnt ? `📸 [FOTO ANTES ADJUNTA DESDE CÁMARA] - ${misCiclos[2].cps} (${misCiclos[2].nombre})` : "📸 FOTO ANTES DE LIMPIEZA";
+                data[96][4] = misCiclos[2] && misCiclos[2].fotoDes ? `📸 [FOTO DESPUES ADJUNTA DESDE CÁMARA] - ${misCiclos[2].cps} (${misCiclos[2].nombre})` : "📸 FOTO DESPUES DE LIMPIEZA";
 
+                const ws = XLSX.utils.aoa_to_sheet(data);
+                ws['!cols'] = [{wch:10},{wch:35},{wch:26},{wch:16},{wch:18},{wch:29},{wch:24}];
+
+                XLSX.utils.book_append_sheet(wb, ws, `${fecha} ${turno}`);
                 XLSX.writeFile(wb, `Control_Nave_${fecha}_${turno}.xlsx`);
-                alert('¡Excel oficial generado conservando la estructura y registros fotográficos con éxito!');
+                alert('¡Excel de terreno generado con éxito!');
 
             } catch (err) {
                 console.error(err);
-                alert('Error al generar el archivo Excel: ' + err.message);
+                alert('Error al generar el archivo: ' + err.message);
             }
         }
 
         function limpiarTodo() {
             if (confirm('¿Vaciar los registros del turno?')) {
+                localStorage.removeItem('altonorte_ciclos');
+                localStorage.removeItem('altonorte_termografias');
                 misCiclos = [];
                 misTermografias = [];
                 actualizarListaCiclos();
