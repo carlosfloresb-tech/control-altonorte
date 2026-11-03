@@ -4,7 +4,6 @@
     <meta charset="UTF-8">
     <meta name="viewport" content="width=device-width, initial-scale=1.0, maximum-scale=1.0, user-scalable=no">
     <title>Control Operacional - Nave Altonorte</title>
-    <!-- Carga de librerías para lectura/escritura exacta de Excel -->
     <script src="https://cdn.jsdelivr.net/npm/xlsx@0.18.5/dist/xlsx.full.min.js"></script>
     <style>
         :root {
@@ -164,7 +163,7 @@
 
     <div class="header">
         <h1>Nave Altonorte - Control Operacional</h1>
-        <span class="badge-offline">⚡ 100% Offline-First (Generador Fiel)</span>
+        <span class="badge-offline">⚡ 100% Offline-First (Matriz Oficial)</span>
     </div>
 
     <!-- 1. ENCABEZADO Y SUPERVISORES -->
@@ -591,9 +590,11 @@
 
             ciclos.push(ciclo);
             localStorage.setItem('altonorte_ciclos', JSON.stringify(ciclos));
+            
+            // Forzamos actualización visual inmediata en pantalla
             renderizarHistorialCiclos();
 
-            alert(`¡Ciclo ${ciclo.nombre} (${ciclo.cps}) guardado correctamente!`);
+            alert(`¡Ciclo ${ciclo.nombre} (${ciclo.cps}) guardado correctamente en pantalla!`);
 
             document.getElementById('prevEnt').style.display = 'none';
             document.getElementById('prevSal').style.display = 'none';
@@ -603,6 +604,8 @@
 
         function renderizarHistorialCiclos() {
             const lista = document.getElementById('listaCiclos');
+            if (!lista) return;
+            
             if (ciclos.length === 0) {
                 lista.innerHTML = '<li style="color:var(--text-muted); font-size:0.8rem;">No hay ciclos registrados aún.</li>';
                 return;
@@ -640,7 +643,6 @@
             
             let data = Array(105).fill(null).map(() => Array(8).fill(""));
 
-            // 1. Cabecera oficial
             data[0][1] = "Control  Operacional Supervisor Nave";
             data[2][1] = `Fecha: ${fechaStr} ${turnoStr}`;
 
@@ -734,7 +736,6 @@
                 data[r+10][1] = "Total"; data[r+10][3] = mTotal;
             }
 
-            // Asignación de Fotos y referencias en hoja de Excel
             data[65][1] = ciclos[0] ? `📸 FOTO ANTES DE LIMPIEZA - ${ciclos[0].cps} (${ciclos[0].nombre})` : "📸 FOTO ANTES DE LIMPIEZA";
             data[65][4] = ciclos[0] ? `📸 FOTO DESPUES DE LIMPIEZA - ${ciclos[0].cps} (${ciclos[0].nombre})` : "📸 FOTO DESPUES DE LIMPIEZA";
             
@@ -744,16 +745,9 @@
             data[96][1] = ciclos[2] ? `📸 FOTO ANTES DE LIMPIEZA - ${ciclos[2].cps} (${ciclos[2].nombre})` : "📸 FOTO ANTES DE LIMPIEZA";
             data[96][4] = ciclos[2] ? `📸 FOTO DESPUES DE LIMPIEZA - ${ciclos[2].cps} (${ciclos[2].nombre})` : "📸 FOTO DESPUES DE LIMPIEZA";
 
-            // Asignar anchos de columnas idénticos a la plantilla de Altonorte
             const ws = XLSX.utils.aoa_to_sheet(data);
             ws['!cols'] = [
-                { wch: 10 }, // A
-                { wch: 35 }, // B
-                { wch: 26 }, // C
-                { wch: 16 }, // D
-                { wch: 18 }, // E
-                { wch: 29 }, // F
-                { wch: 24 }  // G
+                { wch: 10 }, { wch: 35 }, { wch: 26 }, { wch: 16 }, { wch: 18 }, { wch: 29 }, { wch: 24 }
             ];
 
             const wb = XLSX.utils.book_new();
