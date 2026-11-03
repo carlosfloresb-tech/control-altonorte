@@ -214,21 +214,61 @@
         </div>
     </div>
 
-    <!-- 2. CHECKLIST Y ESTADO DE EQUIPOS -->
+    <!-- 2. CHECKLIST OPERACIONAL Y ESTADO DE EQUIPOS -->
     <div class="card">
-        <div class="card-title">⚙️ 2. Checklist Operacional y Comentarios de Inicio</div>
-        <div class="form-group">
-            <label>Estado Cargador, Picotón, Aljibe y Stand-by</label>
-            <textarea id="comentariosInicio" rows="3" oninput="guardarEstadoLocal()">Operativos:
-Cargador M-627 Pendiente de revisión CAEMIN.
-Picotón M-855 Pendiente de revisión CAEMIN.
-Camión Aljibe (M-8358) Operativo.
+        <div class="card-title">⚙️ 2. Checklist Operacional de Equipos CAEMIN</div>
+        
+        <div class="grid-2">
+            <div class="form-group">
+                <label>Cargador 637 (Operativo)</label>
+                <select id="estCarg637" onchange="guardarEstadoLocal()">
+                    <option value="Revisado por Caemin">Revisado por Caemin</option>
+                    <option value="Pendiente de revisión por Caemin">Pendiente de revisión por Caemin</option>
+                    <option value="Fuera de servicio">Fuera de servicio</option>
+                </select>
+            </div>
+            <div class="form-group">
+                <label>Picotón 855 (Operativo)</label>
+                <select id="estPic855" onchange="guardarEstadoLocal()">
+                    <option value="Revisado por Caemin">Revisado por Caemin</option>
+                    <option value="Pendiente de revisión por Caemin" selected>Pendiente de revisión por Caemin</option>
+                    <option value="Fuera de servicio">Fuera de servicio</option>
+                </select>
+            </div>
+        </div>
 
-Stand by:
-Picotón 854 Revisado por CAEMIN.
-Cargador 637 Fuera de servicio.
+        <div class="grid-2">
+            <div class="form-group">
+                <label>Cargador 627 (Stand-by)</label>
+                <select id="estCarg627" onchange="guardarEstadoLocal()">
+                    <option value="Revisado por Caemin">Revisado por Caemin</option>
+                    <option value="Pendiente de revisión por Caemin">Pendiente de revisión por Caemin</option>
+                    <option value="Fuera de servicio" selected>Fuera de servicio</option>
+                </select>
+            </div>
+            <div class="form-group">
+                <label>Picotón 854 (Stand-by)</label>
+                <select id="estPic854" onchange="guardarEstadoLocal()">
+                    <option value="Revisado por Caemin">Revisado por Caemin</option>
+                    <option value="Pendiente de revisión por Caemin">Pendiente de revisión por Caemin</option>
+                    <option value="Fuera de servicio">Fuera de servicio</option>
+                </select>
+            </div>
+        </div>
 
-Tiempo en teleoperación: 0 min por pérdida de señal.</textarea>
+        <div class="grid-2">
+            <div class="form-group">
+                <label>Camión Aljibe (M-8358)</label>
+                <select id="estAljibe" onchange="guardarEstadoLocal()">
+                    <option value="Operativo" selected>Operativo</option>
+                    <option value="Pendiente de revisión por Caemin">Pendiente de revisión por Caemin</option>
+                    <option value="Fuera de servicio">Fuera de servicio</option>
+                </select>
+            </div>
+            <div class="form-group">
+                <label>Pérdida de Señal (Minutos teleoperación)</label>
+                <input type="number" id="minTeleop" value="0" oninput="guardarEstadoLocal()">
+            </div>
         </div>
     </div>
 
@@ -375,7 +415,7 @@ Tiempo en teleoperación: 0 min por pérdida de señal.</textarea>
             </div>
         </div>
 
-        <!-- SELECTOR DUAL DE FOTOS LIBRE (CÁMARA O FOTOTECA) -->
+        <!-- SELECTOR DUAL DE FOTOS LIBRE -->
         <div class="grid-2">
             <div class="form-group">
                 <label>📸 Foto ANTES (Cámara o Galería)</label>
@@ -420,9 +460,13 @@ Tiempo en teleoperación: 0 min por pérdida de señal.</textarea>
             document.getElementById('supNave').value = localStorage.getItem('supNave') || 'Carlos Flores';
             document.getElementById('opPicoton').value = localStorage.getItem('opPicoton') || 'Marcelo Faundez';
             document.getElementById('opCargador').value = localStorage.getItem('opCargador') || 'Julio Miranda';
-            if (localStorage.getItem('comentariosInicio')) {
-                document.getElementById('comentariosInicio').value = localStorage.getItem('comentariosInicio');
-            }
+            
+            if(localStorage.getItem('estCarg637')) document.getElementById('estCarg637').value = localStorage.getItem('estCarg637');
+            if(localStorage.getItem('estPic855')) document.getElementById('estPic855').value = localStorage.getItem('estPic855');
+            if(localStorage.getItem('estCarg627')) document.getElementById('estCarg627').value = localStorage.getItem('estCarg627');
+            if(localStorage.getItem('estPic854')) document.getElementById('estPic854').value = localStorage.getItem('estPic854');
+            if(localStorage.getItem('estAljibe')) document.getElementById('estAljibe').value = localStorage.getItem('estAljibe');
+            if(localStorage.getItem('minTeleop')) document.getElementById('minTeleop').value = localStorage.getItem('minTeleop');
 
             renderizarHistorialCiclos();
             renderizarHistorialTermografias();
@@ -437,7 +481,13 @@ Tiempo en teleoperación: 0 min por pérdida de señal.</textarea>
             localStorage.setItem('supNave', document.getElementById('supNave').value);
             localStorage.setItem('opPicoton', document.getElementById('opPicoton').value);
             localStorage.setItem('opCargador', document.getElementById('opCargador').value);
-            localStorage.setItem('comentariosInicio', document.getElementById('comentariosInicio').value);
+            
+            localStorage.setItem('estCarg637', document.getElementById('estCarg637').value);
+            localStorage.setItem('estPic855', document.getElementById('estPic855').value);
+            localStorage.setItem('estCarg627', document.getElementById('estCarg627').value);
+            localStorage.setItem('estPic854', document.getElementById('estPic854').value);
+            localStorage.setItem('estAljibe', document.getElementById('estAljibe').value);
+            localStorage.setItem('minTeleop', document.getElementById('minTeleop').value);
         }
 
         function toggleCamposTermografia() {
@@ -592,17 +642,27 @@ Tiempo en teleoperación: 0 min por pérdida de señal.</textarea>
 
             data[6][1] = "Actividades"; data[6][2] = "Controles"; data[6][3] = "Responsable"; data[6][4] = "Estatus"; data[6][5] = "Comentarios ";
             
+            // Compilación automática del checklist según selección
+            const c637 = document.getElementById('estCarg637').value;
+            const p855 = document.getElementById('estPic855').value;
+            const c627 = document.getElementById('estCarg627').value;
+            const p854 = document.getElementById('estPic854').value;
+            const aljibe = document.getElementById('estAljibe').value;
+            const teleop = document.getElementById('minTeleop').value;
+
+            const textoChecklist = `Operativos:\nCargador M-637: ${c637}.\nPicotón M-855: ${p855}.\nCamión Aljibe (M-8358): ${aljibe}.\n\nStand by:\nPicotón 854: ${p854}.\nCargador 627: ${c627}.\n\nTiempo en teleoperación: ${teleop} min por pérdida de señal.`;
+
             data[7][1] = "Control previo inicio de Actividades. \n(Inicio de Turno)";
             data[7][2] = "Check list Operacional Cargador y Picoton";
             data[7][3] = "Op. Maq "; data[7][4] = "✓";
-            data[7][5] = document.getElementById('comentariosInicio').value;
+            data[7][5] = textoChecklist;
 
             data[8][2] = "Asegurar condición de equipos por Caemin "; data[8][3] = "Caemin"; data[8][4] = "✓";
             data[9][1] = "Control previo al retiro del material "; data[9][2] = "Confirmar tiempo de al menos 10 minutos desde el termino de picado del foso"; data[9][3] = "Sup. Nave"; data[9][4] = "✓"; data[9][5] = "Se evalua el ingreso inmediato de cargador, por disminucion de material en foso.";
             data[10][2] = "Verificar visualmente que el material en el foso este sólido (no líquido)"; data[10][3] = "Sup. Nave"; data[10][4] = "✓"; data[10][5] = "No se detecta material en estado líquido.";
-            data[11][1] = "Control خلال retiro y traslado de material "; data[11][2] = "Verificar que no exista presencia de llamas, humo o indicios de ignición"; data[11][3] = "Sup. Nave"; data[11][4] = "✓"; data[11][5] = "No se aprecian fosos con materiales liquidos ni presencia de llamas en equipos";
+            data[11][1] = "Control durante retiro y traslado de material "; data[11][2] = "Verificar que no exista presencia de llamas, humo o indicios de ignición"; data[11][3] = "Sup. Nave"; data[11][4] = "✓"; data[11][5] = "No se aprecian fosos con materiales liquidos ni presencia de llamas en equipos";
             data[12][1] = "Control del tratamiento del material en explanada"; data[12][2] = "Asegurar que la disposición del material favorezca el enfriamiento y que este en estado sólido (no líquido)."; data[12][3] = "Sup. Nave"; data[12][4] = "✓"; data[12][5] = "Se mantiene area despejada, se realiza retiro de material de explanada";
-            data[13][2] = "Verificar que camion aljibe este disponible durante toda la actividad"; data[13][3] = "Sup. Nave"; data[13][4] = "✓"; data[13][5] = "Camión Aljibe operativo";
+            data[13][2] = "Verificar que camion aljibe este disponible durante toda la actividad"; data[13][3] = "Sup. Nave"; data[13][4] = "✓"; data[13][5] = `Camión Aljibe M-8358: ${aljibe}`;
 
             data[15][1] = "Termografia (°C)";
             data[16][1] = "Picoton"; data[16][2] = "Flexibles"; data[16][3] = "cuña"; data[16][4] = "tornamesa";
