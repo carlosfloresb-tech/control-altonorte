@@ -4,10 +4,7 @@
     <meta charset="UTF-8">
     <meta name="viewport" content="width=device-width, initial-scale=1.0, maximum-scale=1.0, user-scalable=no">
     <title>Control Operacional - Nave Altonorte</title>
-
-    <!-- Cargamos SheetJS sin minificar para máxima compatibilidad -->
     <script src="https://cdn.jsdelivr.net/npm/xlsx@0.18.5/dist/xlsx.full.min.js"></script>
-
     <style>
         :root {
             --bg-color: #0f172a;
@@ -166,7 +163,7 @@
 
     <div class="header">
         <h1>Nave Altonorte - Control Operacional</h1>
-        <span class="badge-offline">⚡ 100% Offline-First (Format Matriz Oficial)</span>
+        <span class="badge-offline">⚡ 100% Offline-First (Matriz Oficial)</span>
     </div>
 
     <!-- 1. ENCABEZADO Y SUPERVISORES -->
@@ -250,7 +247,7 @@ Tiempo en teleoperación: 0 min por pérdida de señal.</textarea>
                 <label>CPS</label>
                 <select id="termCps">
                     <option value="CPS-1">CPS-1</option>
-                    <option value="CPS-2">CPS-2</option>
+                    <option value="CPS-2" selected>CPS-2</option>
                     <option value="CPS-3">CPS-3</option>
                     <option value="CPS-4">CPS-4</option>
                 </select>
@@ -378,16 +375,16 @@ Tiempo en teleoperación: 0 min por pérdida de señal.</textarea>
             </div>
         </div>
 
-        <!-- SELECTOR DUAL DE FOTOS (FOTOTECA O CÁMARA) -->
+        <!-- SELECTOR DUAL DE FOTOS LIBRE (CÁMARA O FOTOTECA) -->
         <div class="grid-2">
             <div class="form-group">
-                <label>📸 Foto ANTES (Fototeca o Cámara)</label>
-                <input type="file" id="fotoEntrada" accept="image/*" onchange="previewImagen(this, 'prevEnt')">
+                <label>📸 Foto ANTES (Cámara o Galería)</label>
+                <input type="file" id="fotoEntrada" accept="image/jpeg,image/png,image/heic" onchange="previewImagen(this, 'prevEnt')">
                 <img id="prevEnt" class="preview-img" style="display:none;">
             </div>
             <div class="form-group">
-                <label>📸 Foto DESPUÉS (Fototeca o Cámara)</label>
-                <input type="file" id="fotoSalida" accept="image/*" onchange="previewImagen(this, 'prevSal')">
+                <label>📸 Foto DESPUÉS (Cámara o Galería)</label>
+                <input type="file" id="fotoSalida" accept="image/jpeg,image/png,image/heic" onchange="previewImagen(this, 'prevSal')">
                 <img id="prevSal" class="preview-img" style="display:none;">
             </div>
         </div>
@@ -397,14 +394,14 @@ Tiempo en teleoperación: 0 min por pérdida de señal.</textarea>
 
     <!-- 5. HISTORIAL DE CICLOS GUARDADOS -->
     <div class="card">
-        <div class="card-title">📦 Ciclos Almacenados en Teléfono</div>
+        <div class="card-title">📦 Ciclos Almacenados en Teléfono (Máximo 3)</div>
         <ul id="listaCiclos" class="history-list"></ul>
     </div>
 
     <!-- 6. EXPORTAR A EXCEL DEFINITIVO -->
     <div class="card">
         <div class="card-title">📊 Generar Planilla Oficial Altonorte</div>
-        <button class="btn btn-primary" onclick="generarExcelMatrizOficial()">📥 Descargar Excel Matriz (.xlsx)</button>
+        <button class="btn btn-primary" onclick="generarExcelMatrizOficial()">📥 Descargar Excel Matriz Oficial (.xlsx)</button>
         <button class="btn btn-danger" onclick="limpiarMemoria()" style="margin-top: 10px;">🗑️ Borrar Memoria del Turno</button>
     </div>
 
@@ -511,6 +508,11 @@ Tiempo en teleoperación: 0 min por pérdida de señal.</textarea>
         }
 
         function agregarCiclo() {
+            if (ciclos.length >= 3) {
+                alert('La planilla oficial admite un máximo de 3 ciclos por turno.');
+                return;
+            }
+
             const ciclo = {
                 id: Date.now(),
                 cps: document.getElementById('cicloCps').value,
@@ -540,7 +542,7 @@ Tiempo en teleoperación: 0 min por pérdida de señal.</textarea>
             localStorage.setItem('altonorte_ciclos', JSON.stringify(ciclos));
             renderizarHistorialCiclos();
 
-            alert(`¡Ciclo ${ciclo.nombre} guardado correctamente!`);
+            alert(`¡Ciclo ${ciclo.nombre} (${ciclo.cps}) guardado correctamente!`);
 
             document.getElementById('prevEnt').style.display = 'none';
             document.getElementById('prevSal').style.display = 'none';
@@ -557,8 +559,8 @@ Tiempo en teleoperación: 0 min por pérdida de señal.</textarea>
             lista.innerHTML = ciclos.map((c, index) => `
                 <li class="history-item">
                     <div>
-                        <strong>${c.cps} (${c.nombre})</strong> - Maz: ${c.tMaz} | Ret. Carg: ${c.tRetCarg}<br>
-                        <small>Baldadas: ${c.baldadas} | Ton: ${c.toneladas} | Temp: ${c.tempMat}°C</small>
+                        <strong>Ciclo ${index + 1}: ${c.cps} (${c.nombre})</strong><br>
+                        <small>Maz: ${c.tMaz} | Ret. Carg: ${c.tRetCarg} | Ton: ${c.toneladas}</small>
                     </div>
                     <button onclick="eliminarCiclo(${index})" style="background:none; border:none; color:var(--danger-color); font-weight:bold; cursor:pointer;">❌</button>
                 </li>
@@ -571,28 +573,25 @@ Tiempo en teleoperación: 0 min por pérdida de señal.</textarea>
             renderizarHistorialCiclos();
         }
 
-        // MOTOR REPLICADOR DE LA PLANILLA OFICIAL DE ALTONORTE
         function generarExcelMatrizOficial() {
             const fechaStr = document.getElementById('fechaTurno').value || "2026-10-25";
             const turnoStr = document.getElementById('tipoTurno').value || "TB";
             
-            // Matriz inicial vacía (filas 1 a 100)
-            let data = Array(100).fill(null).map(() => Array(8).fill(""));
+            let data = Array(105).fill(null).map(() => Array(8).fill(""));
 
-            // Encabezados Oficiales
             data[0][1] = "Control  Operacional Supervisor Nave";
             data[2][1] = `Fecha: ${fechaStr} ${turnoStr}`;
-            
+
             data[3][1] = "Supervisor SOP:"; data[3][2] = document.getElementById('supSop').value;
             data[3][3] = "Supervisor CRM:"; data[3][4] = document.getElementById('supCrm').value;
-            data[3][5] = "Operador Picotón:"; data[3][6] = document.getElementById('opPicoton').value;
+            data[3][5] = "Operador Picotón: "; data[3][6] = document.getElementById('opPicoton').value;
 
             data[4][1] = "Supervisor Caemin:"; data[4][2] = document.getElementById('supCaemin').value;
             data[4][3] = "Supervisor Nave:"; data[4][4] = document.getElementById('supNave').value;
-            data[4][5] = "Operador Cargador:"; data[4][6] = document.getElementById('opCargador').value;
+            data[4][5] = "Operador Cargador: "; data[4][6] = document.getElementById('opCargador').value;
 
-            // Tabla 1: Actividades
             data[6][1] = "Actividades"; data[6][2] = "Controles"; data[6][3] = "Responsable"; data[6][4] = "Estatus"; data[6][5] = "Comentarios ";
+            
             data[7][1] = "Control previo inicio de Actividades. \n(Inicio de Turno)";
             data[7][2] = "Check list Operacional Cargador y Picoton";
             data[7][3] = "Op. Maq "; data[7][4] = "✓";
@@ -601,11 +600,10 @@ Tiempo en teleoperación: 0 min por pérdida de señal.</textarea>
             data[8][2] = "Asegurar condición de equipos por Caemin "; data[8][3] = "Caemin"; data[8][4] = "✓";
             data[9][1] = "Control previo al retiro del material "; data[9][2] = "Confirmar tiempo de al menos 10 minutos desde el termino de picado del foso"; data[9][3] = "Sup. Nave"; data[9][4] = "✓"; data[9][5] = "Se evalua el ingreso inmediato de cargador, por disminucion de material en foso.";
             data[10][2] = "Verificar visualmente que el material en el foso este sólido (no líquido)"; data[10][3] = "Sup. Nave"; data[10][4] = "✓"; data[10][5] = "No se detecta material en estado líquido.";
-            data[11][1] = "Control durante retiro y traslado de material "; data[11][2] = "Verificar que no exista presencia de llamas, humo o indicios de ignición"; data[11][3] = "Sup. Nave"; data[11][4] = "✓"; data[11][5] = "No se aprecian fosos con materiales liquidos ni presencia de llamas en equipos";
+            data[11][1] = "Control خلال retiro y traslado de material "; data[11][2] = "Verificar que no exista presencia de llamas, humo o indicios de ignición"; data[11][3] = "Sup. Nave"; data[11][4] = "✓"; data[11][5] = "No se aprecian fosos con materiales liquidos ni presencia de llamas en equipos";
             data[12][1] = "Control del tratamiento del material en explanada"; data[12][2] = "Asegurar que la disposición del material favorezca el enfriamiento y que este en estado sólido (no líquido)."; data[12][3] = "Sup. Nave"; data[12][4] = "✓"; data[12][5] = "Se mantiene area despejada, se realiza retiro de material de explanada";
             data[13][2] = "Verificar que camion aljibe este disponible durante toda la actividad"; data[13][3] = "Sup. Nave"; data[13][4] = "✓"; data[13][5] = "Camión Aljibe operativo";
 
-            // Tabla 2: Termografías
             data[15][1] = "Termografia (°C)";
             data[16][1] = "Picoton"; data[16][2] = "Flexibles"; data[16][3] = "cuña"; data[16][4] = "tornamesa";
 
@@ -616,8 +614,6 @@ Tiempo en teleoperación: 0 min por pérdida de señal.</textarea>
                     data[17+i][2] = termPic[i].val1;
                     data[17+i][3] = termPic[i].val2;
                     data[17+i][4] = termPic[i].val3;
-                } else {
-                    data[17+i][1] = `CPS-${i+2}`;
                 }
             }
 
@@ -629,46 +625,44 @@ Tiempo en teleoperación: 0 min por pérdida de señal.</textarea>
                     data[22+i][2] = termCarg[i].val1;
                     data[22+i][3] = termCarg[i].val2;
                     data[22+i][4] = termCarg[i].val3;
-                } else {
-                    data[22+i][1] = `CPS-${i+2}`;
                 }
             }
 
-            // Tabla 3: Ciclos CPS (Filas 28, 40, 52)
             let rowOffsets = [27, 39, 51];
             for (let i = 0; i < 3; i++) {
                 let r = rowOffsets[i];
-                let c = ciclos[i] || {
-                    cps: `CPS-${i+1}`, nombre: 'J-100',
-                    tMaz: '20:00', obsMaz: '', tBloq: '20:05', obsBloq: '',
-                    tIngPic: '20:06', obsIngPic: '', tRetPic: '20:15', obsRetPic: '',
-                    tIngCarg: '20:16', obsIngCarg: '', tRetCarg: '20:25', obsRetCarg: '',
-                    tDesb: '20:30', obsDesb: '', baldadas: 0, toneladas: 0, tempMat: 0
-                };
+                let c = ciclos[i];
+
+                if (!c) {
+                    data[r][1] = "CPS"; data[r][2] = `CPS-${i+2}`;
+                    data[r+1][1] = "Ciclo"; data[r+1][2] = "";
+                    data[r+2][1] = "CPS"; data[r+2][2] = "Fecha"; data[r+2][3] = "Minutos"; data[r+2][4] = "Baldadas "; data[r+2][5] = "Comentarios desviaciones";
+                    continue;
+                }
 
                 data[r][1] = "CPS"; data[r][2] = c.cps;
                 data[r+1][1] = "Ciclo"; data[r+1][2] = c.nombre;
                 data[r+2][1] = "CPS"; data[r+2][2] = "Fecha"; data[r+2][3] = "Minutos"; data[r+2][4] = "Baldadas "; data[r+2][5] = "Comentarios desviaciones";
 
-                data[r+3][1] = "Termino retiro mazamorra desde CPS"; data[r+3][2] = c.tMaz; data[r+3][5] = c.obsMaz;
-                data[r+4][1] = "Bloqueo de tapas CPS"; data[r+4][2] = c.tBloq; data[r+4][5] = c.obsBloq;
-                data[r+5][1] = "Ingreso Picoton foso"; data[r+5][2] = c.tIngPic; data[r+5][5] = c.obsIngPic;
-                data[r+6][1] = "Retiro picoton foso"; data[r+6][2] = c.tRetPic; data[r+6][5] = c.obsRetPic;
-                data[r+7][1] = "Ingreso Cargador Foso"; data[r+7][2] = c.tIngCarg; data[r+7][5] = "Temperatura material retirado (°C)"; data[r+7][6] = c.tempMat;
-                data[r+8][1] = "Retiro de Cargador en foso"; data[r+8][2] = c.tRetCarg; data[r+8][4] = c.baldadas; data[r+8][5] = c.toneladas; data[r+8][6] = "Ton. ";
-                data[r+9][1] = "Desbloqueo de tapas CPS"; data[r+9][2] = c.tDesb; data[r+9][5] = c.obsDesb;
-                data[r+10][1] = "Total";
+                data[r+3][1] = "Termino retiro mazamorra desde CPS"; data[r+3][2] = c.tMaz; data[r+3][3] = 0; data[r+3][5] = c.obsMaz;
+                data[r+4][1] = "Bloqueo de tapas CPS"; data[r+4][2] = c.tBloq; data[r+4][3] = 6.0; data[r+4][5] = c.obsBloq;
+                data[r+5][1] = "Ingreso Picoton foso"; data[r+5][2] = c.tIngPic; data[r+5][3] = 1.0; data[r+5][5] = c.obsIngPic;
+                data[r+6][1] = "Retiro picoton foso"; data[r+6][2] = c.tRetPic; data[r+6][3] = 8.0; data[r+6][5] = c.obsRetPic;
+                data[r+7][1] = "Ingreso Cargador Foso"; data[r+7][2] = c.tIngCarg; data[r+7][3] = 2.0; data[r+7][5] = "Temperatura material retirado (°C)"; data[r+7][6] = c.tempMat;
+                data[r+8][1] = "Retiro de Cargador en foso"; data[r+8][2] = c.tRetCarg; data[r+8][3] = 6.0; data[r+8][4] = c.baldadas; data[r+8][5] = c.toneladas; data[r+8][6] = "Ton. ";
+                data[r+9][1] = "Desbloqueo de tapas CPS"; data[r+9][2] = c.tDesb; data[r+9][3] = 5.0; data[r+9][5] = c.obsDesb;
+                data[r+10][1] = "Total"; data[r+10][3] = 28.0;
             }
 
-            // Fotos
-            data[65][1] = `📸 FOTO ANTES DE LIMPIEZA - ${ciclos[0]?.cps || 'CPS'} (${ciclos[0]?.nombre || ''})`;
-            data[65][4] = `📸 FOTO DESPUES DE LIMPIEZA - ${ciclos[0]?.cps || 'CPS'} (${ciclos[0]?.nombre || ''})`;
-            data[79][1] = `📸 FOTO ANTES DE LIMPIEZA - ${ciclos[1]?.cps || 'CPS'} (${ciclos[1]?.nombre || ''})`;
-            data[79][4] = `📸 FOTO DESPUES DE LIMPIEZA - ${ciclos[1]?.cps || 'CPS'} (${ciclos[1]?.nombre || ''})`;
-            data[96][1] = `📸 FOTO ANTES DE LIMPIEZA - ${ciclos[2]?.cps || 'CPS'} (${ciclos[2]?.nombre || ''})`;
-            data[96][4] = `📸 FOTO DESPUES DE LIMPIEZA - ${ciclos[2]?.cps || 'CPS'} (${ciclos[2]?.nombre || ''})`;
+            data[65][1] = ciclos[0] ? `📸 FOTO ANTES DE LIMPIEZA - ${ciclos[0].cps} (${ciclos[0].nombre})` : "📸 FOTO ANTES DE LIMPIEZA";
+            data[65][4] = ciclos[0] ? `📸 FOTO DESPUES DE LIMPIEZA - ${ciclos[0].cps} (${ciclos[0].nombre})` : "📸 FOTO DESPUES DE LIMPIEZA";
+            
+            data[79][1] = ciclos[1] ? `📸 FOTO ANTES DE LIMPIEZA - ${ciclos[1].cps} (${ciclos[1].nombre})` : "📸 FOTO ANTES DE LIMPIEZA";
+            data[79][4] = ciclos[1] ? `📸 FOTO DESPUES DE LIMPIEZA - ${ciclos[1].cps} (${ciclos[1].nombre})` : "📸 FOTO DESPUES DE LIMPIEZA";
+            
+            data[96][1] = ciclos[2] ? `📸 FOTO ANTES DE LIMPIEZA - ${ciclos[2].cps} (${ciclos[2].nombre})` : "📸 FOTO ANTES DE LIMPIEZA";
+            data[96][4] = ciclos[2] ? `📸 FOTO DESPUES DE LIMPIEZA - ${ciclos[2].cps} (${ciclos[2].nombre})` : "📸 FOTO DESPUES DE LIMPIEZA";
 
-            // Generar archivo con SheetJS
             const ws = XLSX.utils.aoa_to_sheet(data);
             const wb = XLSX.utils.book_new();
             XLSX.utils.book_append_sheet(wb, ws, `${fechaStr} ${turnoStr}`);
