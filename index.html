@@ -4,7 +4,10 @@
     <meta charset="UTF-8">
     <meta name="viewport" content="width=device-width, initial-scale=1.0, maximum-scale=1.0, user-scalable=no">
     <title>Control Operacional - Nave Altonorte</title>
+
+    <!-- Cargamos SheetJS sin minificar para máxima compatibilidad -->
     <script src="https://cdn.jsdelivr.net/npm/xlsx@0.18.5/dist/xlsx.full.min.js"></script>
+
     <style>
         :root {
             --bg-color: #0f172a;
@@ -29,21 +32,21 @@
 
         .header {
             text-align: center;
-            padding: 15px 0;
+            padding: 12px 0;
             border-bottom: 2px solid var(--accent-color);
             margin-bottom: 20px;
         }
 
         .header h1 {
-            font-size: 1.4rem;
+            font-size: 1.3rem;
             color: var(--accent-color);
-            margin: 0 0 5px 0;
+            margin: 0 0 4px 0;
         }
 
         .badge-offline {
             background-color: var(--accent-color);
             color: #000;
-            font-size: 0.8rem;
+            font-size: 0.75rem;
             font-weight: bold;
             padding: 4px 10px;
             border-radius: 20px;
@@ -54,16 +57,16 @@
             background-color: var(--card-bg);
             border: 1px solid var(--border-color);
             border-radius: 12px;
-            padding: 18px;
+            padding: 16px;
             margin-bottom: 20px;
             box-shadow: 0 4px 6px -1px rgba(0, 0, 0, 0.3);
         }
 
         .card-title {
-            font-size: 1.1rem;
+            font-size: 1.05rem;
             font-weight: bold;
             color: var(--accent-color);
-            margin-bottom: 15px;
+            margin-bottom: 14px;
             display: flex;
             align-items: center;
             gap: 8px;
@@ -71,26 +74,24 @@
             padding-bottom: 8px;
         }
 
-        .form-group {
-            margin-bottom: 14px;
-        }
+        .form-group { margin-bottom: 12px; }
 
         label {
             display: block;
-            font-size: 0.85rem;
+            font-size: 0.82rem;
             color: var(--text-muted);
-            margin-bottom: 5px;
+            margin-bottom: 4px;
             font-weight: 500;
         }
 
         input[type="text"], input[type="date"], input[type="time"], input[type="number"], select, textarea {
             width: 100%;
-            padding: 12px;
+            padding: 11px;
             background-color: #0f172a;
             border: 1px solid var(--border-color);
             border-radius: 8px;
             color: var(--text-color);
-            font-size: 1rem;
+            font-size: 0.95rem;
             box-sizing: border-box;
         }
 
@@ -100,24 +101,15 @@
             box-shadow: 0 0 0 2px rgba(16, 185, 129, 0.2);
         }
 
-        .grid-2 {
-            display: grid;
-            grid-template-columns: 1fr 1fr;
-            gap: 12px;
-        }
-
-        .grid-3 {
-            display: grid;
-            grid-template-columns: 1fr 1fr 1fr;
-            gap: 10px;
-        }
+        .grid-2 { display: grid; grid-template-columns: 1fr 1fr; gap: 10px; }
+        .grid-3 { display: grid; grid-template-columns: 1fr 1fr 1fr; gap: 8px; }
 
         .btn {
             width: 100%;
-            padding: 14px;
+            padding: 13px;
             border: none;
             border-radius: 8px;
-            font-size: 1rem;
+            font-size: 0.95rem;
             font-weight: bold;
             cursor: pointer;
             display: flex;
@@ -125,7 +117,6 @@
             align-items: center;
             gap: 8px;
             margin-top: 10px;
-            box-shadow: 0 2px 4px rgba(0,0,0,0.2);
         }
 
         .btn-primary { background-color: var(--accent-color); color: #000; }
@@ -141,30 +132,33 @@
             font-size: 0.85rem;
             border-left: 4px solid var(--accent-color);
             border: 1px solid var(--border-color);
+            display: flex;
+            justify-content: space-between;
+            align-items: center;
         }
 
         .preview-img {
             max-width: 100%;
             height: auto;
-            max-height: 120px;
+            max-height: 110px;
             border-radius: 6px;
-            margin-top: 8px;
+            margin-top: 6px;
             border: 1px solid var(--border-color);
         }
 
         .hito-box {
             background-color: #151e32;
-            padding: 12px;
+            padding: 10px;
             border-radius: 8px;
-            margin-bottom: 12px;
+            margin-bottom: 10px;
             border: 1px solid #334155;
         }
 
         .hito-title {
-            font-size: 0.9rem;
+            font-size: 0.85rem;
             font-weight: bold;
             color: #cbd5e1;
-            margin-bottom: 8px;
+            margin-bottom: 6px;
         }
     </style>
 </head>
@@ -172,20 +166,20 @@
 
     <div class="header">
         <h1>Nave Altonorte - Control Operacional</h1>
-        <span class="badge-offline">⚡ 100% Offline-First (Sin Internet)</span>
+        <span class="badge-offline">⚡ 100% Offline-First (Format Matriz Oficial)</span>
     </div>
 
-    <!-- 1. IDENTIFICACIÓN Y SUPERVISORES -->
+    <!-- 1. ENCABEZADO Y SUPERVISORES -->
     <div class="card">
-        <div class="card-title">📋 1. Identificación y Supervisores del Turno</div>
+        <div class="card-title">📋 1. Identificación y Personal del Turno</div>
         <div class="grid-2">
             <div class="form-group">
                 <label>Fecha de Turno</label>
-                <input type="date" id="fechaTurno" onchange="guardarDatosLocales()">
+                <input type="date" id="fechaTurno" onchange="guardarEstadoLocal()">
             </div>
             <div class="form-group">
                 <label>Tipo de Turno</label>
-                <select id="tipoTurno" onchange="guardarDatosLocales()">
+                <select id="tipoTurno" onchange="guardarEstadoLocal()">
                     <option value="TA">Turno Día (TA)</option>
                     <option value="TB" selected>Turno Noche (TB)</option>
                 </select>
@@ -194,38 +188,56 @@
         <div class="grid-2">
             <div class="form-group">
                 <label>Supervisor SOP</label>
-                <input type="text" id="supSop" placeholder="Ej. Héctor Itter" oninput="guardarDatosLocales()">
+                <input type="text" id="supSop" value="Héctor Itter" oninput="guardarEstadoLocal()">
             </div>
             <div class="form-group">
                 <label>Supervisor CRM</label>
-                <input type="text" id="supCrm" placeholder="Ej. Claudio Mora" oninput="guardarDatosLocales()">
+                <input type="text" id="supCrm" value="Claudio Mora" oninput="guardarEstadoLocal()">
             </div>
         </div>
         <div class="grid-2">
             <div class="form-group">
                 <label>Supervisor CAEMIN</label>
-                <input type="text" id="supCaemin" oninput="guardarDatosLocales()">
+                <input type="text" id="supCaemin" value="Roberto Castillo" oninput="guardarEstadoLocal()">
             </div>
             <div class="form-group">
                 <label>Supervisor Nave</label>
-                <input type="text" id="supNave" oninput="guardarDatosLocales()">
+                <input type="text" id="supNave" value="Carlos Flores" oninput="guardarEstadoLocal()">
             </div>
         </div>
         <div class="grid-2">
             <div class="form-group">
                 <label>Operador Picotón</label>
-                <input type="text" id="opPicoton" oninput="guardarDatosLocales()">
+                <input type="text" id="opPicoton" value="Marcelo Faundez" oninput="guardarEstadoLocal()">
             </div>
             <div class="form-group">
                 <label>Operador Cargador</label>
-                <input type="text" id="opCargador" oninput="guardarDatosLocales()">
+                <input type="text" id="opCargador" value="Julio Miranda" oninput="guardarEstadoLocal()">
             </div>
         </div>
     </div>
 
-    <!-- 2. TERMOGRAFÍAS -->
+    <!-- 2. CHECKLIST Y ESTADO DE EQUIPOS -->
     <div class="card">
-        <div class="card-title">🌡️ 2. Registro de Termografías (°C)</div>
+        <div class="card-title">⚙️ 2. Checklist Operacional y Comentarios de Inicio</div>
+        <div class="form-group">
+            <label>Estado Cargador, Picotón, Aljibe y Stand-by</label>
+            <textarea id="comentariosInicio" rows="3" oninput="guardarEstadoLocal()">Operativos:
+Cargador M-627 Pendiente de revisión CAEMIN.
+Picotón M-855 Pendiente de revisión CAEMIN.
+Camión Aljibe (M-8358) Operativo.
+
+Stand by:
+Picotón 854 Revisado por CAEMIN.
+Cargador 637 Fuera de servicio.
+
+Tiempo en teleoperación: 0 min por pérdida de señal.</textarea>
+        </div>
+    </div>
+
+    <!-- 3. TERMOGRAFÍAS MATRIZ -->
+    <div class="card">
+        <div class="card-title">🌡️ 3. Registro de Termografías (°C)</div>
         <div class="grid-2">
             <div class="form-group">
                 <label>Equipo</label>
@@ -248,48 +260,48 @@
         <div id="camposPicoton" class="grid-3">
             <div class="form-group">
                 <label>Flexibles (°C)</label>
-                <input type="number" id="tFlexPic" value="40.0" step="0.1">
+                <input type="number" id="tFlexPic" value="26.2" step="0.1">
             </div>
             <div class="form-group">
                 <label>Cuña (°C)</label>
-                <input type="number" id="tCunaPic" value="160.0" step="0.1">
+                <input type="number" id="tCunaPic" value="84.8" step="0.1">
             </div>
             <div class="form-group">
                 <label>Tornamesa (°C)</label>
-                <input type="number" id="tTornaPic" value="20.0" step="0.1">
+                <input type="number" id="tTornaPic" value="28.5" step="0.1">
             </div>
         </div>
 
         <div id="camposCargador" class="grid-3" style="display:none;">
             <div class="form-group">
                 <label>Batea (°C)</label>
-                <input type="number" id="tBateaCarg" value="140.0" step="0.1">
+                <input type="number" id="tBateaCarg" value="172.3" step="0.1">
             </div>
             <div class="form-group">
                 <label>Parte Inf. (°C)</label>
-                <input type="number" id="tInfCarg" value="200.0" step="0.1">
+                <input type="number" id="tInfCarg" value="39.2" step="0.1">
             </div>
             <div class="form-group">
-                <label>Flexibles (°C)</label>
-                <input type="number" id="tFlexCarg" value="40.0" step="0.1">
+                <label>Flexibles Int. (°C)</label>
+                <input type="number" id="tFlexCarg" value="25.3" step="0.1">
             </div>
         </div>
 
-        <button class="btn btn-warning" onclick="agregarTermografia()">➕ Guardar Termografía</button>
-        <div style="margin-top: 12px;">
+        <button class="btn btn-warning" onclick="agregarTermografia()">➕ Registrar Termografía</button>
+        <div style="margin-top: 10px;">
             <ul id="listaTermografias" class="history-list"></ul>
         </div>
     </div>
 
-    <!-- 3. CICLOS CPS Y 7 HITOS CON COMENTARIOS -->
+    <!-- 4. REGISTRO DE CICLOS DE OPERACIÓN -->
     <div class="card">
-        <div class="card-title">🔄 3. Registro de Ciclo CPS, Horarios y Desviaciones</div>
+        <div class="card-title">🔄 4. Registro de Ciclo CPS (Horarios, Desviaciones y Fotos)</div>
         <div class="grid-2">
             <div class="form-group">
                 <label>CPS</label>
                 <select id="cicloCps">
                     <option value="CPS-1">CPS-1</option>
-                    <option value="CPS-2">CPS-2</option>
+                    <option value="CPS-2" selected>CPS-2</option>
                     <option value="CPS-3">CPS-3</option>
                     <option value="CPS-4">CPS-4</option>
                 </select>
@@ -300,66 +312,54 @@
             </div>
         </div>
 
-        <!-- HITO 1 -->
+        <!-- 7 HITOS -->
         <div class="hito-box">
             <div class="hito-title">1. Término retiro mazamorra desde CPS</div>
             <div class="grid-2">
                 <input type="time" id="tMaz" value="20:25">
-                <input type="text" id="obsMaz" placeholder="Comentario / Desviación (Opcional)">
+                <input type="text" id="obsMaz" placeholder="Desviación (opcional)">
             </div>
         </div>
-
-        <!-- HITO 2 -->
         <div class="hito-box">
             <div class="hito-title">2. Bloqueo de tapas CPS</div>
             <div class="grid-2">
                 <input type="time" id="tBloq" value="20:31">
-                <input type="text" id="obsBloq" placeholder="Comentario / Desviación (Opcional)">
+                <input type="text" id="obsBloq" placeholder="Desviación (opcional)">
             </div>
         </div>
-
-        <!-- HITO 3 -->
         <div class="hito-box">
             <div class="hito-title">3. Ingreso Picotón foso</div>
             <div class="grid-2">
                 <input type="time" id="tIngPic" value="20:32">
-                <input type="text" id="obsIngPic" placeholder="Comentario / Desviación (Opcional)">
+                <input type="text" id="obsIngPic" placeholder="Desviación (opcional)">
             </div>
         </div>
-
-        <!-- HITO 4 -->
         <div class="hito-box">
             <div class="hito-title">4. Retiro picotón foso</div>
             <div class="grid-2">
                 <input type="time" id="tRetPic" value="20:40">
-                <input type="text" id="obsRetPic" placeholder="Comentario / Desviación (Opcional)">
+                <input type="text" id="obsRetPic" placeholder="Desviación (opcional)">
             </div>
         </div>
-
-        <!-- HITO 5 -->
         <div class="hito-box">
             <div class="hito-title">5. Ingreso Cargador Foso</div>
             <div class="grid-2">
                 <input type="time" id="tIngCarg" value="20:42">
-                <input type="text" id="obsIngCarg" placeholder="Comentario / Desviación (Opcional)">
+                <input type="text" id="obsIngCarg" placeholder="Desviación (opcional)">
             </div>
         </div>
-
-        <!-- HITO 6 -->
         <div class="hito-box">
             <div class="hito-title">6. Retiro de Cargador en foso</div>
             <div class="grid-2">
                 <input type="time" id="tRetCarg" value="20:48">
-                <input type="text" id="obsRetCarg" placeholder="Comentario / Desviación (Opcional)">
+                <input type="text" id="obsRetCarg" placeholder="Desviación (opcional)">
             </div>
         </div>
-
-        <!-- HITO 7 -->
         <div class="hito-box">
             <div class="hito-title">7. Desbloqueo de tapas CPS</div>
             <div class="grid-2">
                 <input type="time" id="tDesb" value="20:53">
-                <input type="text" id="obsDesb" placeholder="Comentario / Desviación (Opcional)">
+                <input type="text" id="obsDesb" placeholder="Desviación (opcional)">
             </div>
         </div>
 
@@ -378,31 +378,33 @@
             </div>
         </div>
 
+        <!-- SELECTOR DUAL DE FOTOS (FOTOTECA O CÁMARA) -->
         <div class="grid-2">
             <div class="form-group">
-                <label>📸 Foto ANTES (Entrada)</label>
-                <input type="file" id="fotoEntrada" accept="image/*" capture="environment" onchange="previewImagen(this, 'prevEnt')">
+                <label>📸 Foto ANTES (Fototeca o Cámara)</label>
+                <input type="file" id="fotoEntrada" accept="image/*" onchange="previewImagen(this, 'prevEnt')">
                 <img id="prevEnt" class="preview-img" style="display:none;">
             </div>
             <div class="form-group">
-                <label>📸 Foto DESPUÉS (Salida)</label>
-                <input type="file" id="fotoSalida" accept="image/*" capture="environment" onchange="previewImagen(this, 'prevSal')">
+                <label>📸 Foto DESPUÉS (Fototeca o Cámara)</label>
+                <input type="file" id="fotoSalida" accept="image/*" onchange="previewImagen(this, 'prevSal')">
                 <img id="prevSal" class="preview-img" style="display:none;">
             </div>
         </div>
 
-        <button class="btn btn-primary" onclick="agregarCiclo()">➕ Guardar Ciclo Completo en Teléfono</button>
+        <button class="btn btn-primary" onclick="agregarCiclo()">➕ Guardar Ciclo en Teléfono</button>
     </div>
 
-    <!-- 4. HISTORIAL Y EXPORTACIÓN -->
+    <!-- 5. HISTORIAL DE CICLOS GUARDADOS -->
     <div class="card">
-        <div class="card-title">📦 Historial de Ciclos Guardados</div>
+        <div class="card-title">📦 Ciclos Almacenados en Teléfono</div>
         <ul id="listaCiclos" class="history-list"></ul>
     </div>
 
+    <!-- 6. EXPORTAR A EXCEL DEFINITIVO -->
     <div class="card">
-        <div class="card-title">📊 Exportar Reporte Consolidado</div>
-        <button class="btn btn-primary" onclick="generarExcelLocal()">📥 Generar y Descargar Excel (.xlsx)</button>
+        <div class="card-title">📊 Generar Planilla Oficial Altonorte</div>
+        <button class="btn btn-primary" onclick="generarExcelMatrizOficial()">📥 Descargar Excel Matriz (.xlsx)</button>
         <button class="btn btn-danger" onclick="limpiarMemoria()" style="margin-top: 10px;">🗑️ Borrar Memoria del Turno</button>
     </div>
 
@@ -415,18 +417,21 @@
         document.addEventListener('DOMContentLoaded', () => {
             document.getElementById('fechaTurno').value = localStorage.getItem('fechaTurno') || new Date().toISOString().split('T')[0];
             document.getElementById('tipoTurno').value = localStorage.getItem('tipoTurno') || 'TB';
-            document.getElementById('supSop').value = localStorage.getItem('supSop') || '';
-            document.getElementById('supCrm').value = localStorage.getItem('supCrm') || '';
-            document.getElementById('supCaemin').value = localStorage.getItem('supCaemin') || '';
-            document.getElementById('supNave').value = localStorage.getItem('supNave') || '';
-            document.getElementById('opPicoton').value = localStorage.getItem('opPicoton') || '';
-            document.getElementById('opCargador').value = localStorage.getItem('opCargador') || '';
-            
+            document.getElementById('supSop').value = localStorage.getItem('supSop') || 'Héctor Itter';
+            document.getElementById('supCrm').value = localStorage.getItem('supCrm') || 'Claudio Mora';
+            document.getElementById('supCaemin').value = localStorage.getItem('supCaemin') || 'Roberto Castillo';
+            document.getElementById('supNave').value = localStorage.getItem('supNave') || 'Carlos Flores';
+            document.getElementById('opPicoton').value = localStorage.getItem('opPicoton') || 'Marcelo Faundez';
+            document.getElementById('opCargador').value = localStorage.getItem('opCargador') || 'Julio Miranda';
+            if (localStorage.getItem('comentariosInicio')) {
+                document.getElementById('comentariosInicio').value = localStorage.getItem('comentariosInicio');
+            }
+
             renderizarHistorialCiclos();
             renderizarHistorialTermografias();
         });
 
-        function guardarDatosLocales() {
+        function guardarEstadoLocal() {
             localStorage.setItem('fechaTurno', document.getElementById('fechaTurno').value);
             localStorage.setItem('tipoTurno', document.getElementById('tipoTurno').value);
             localStorage.setItem('supSop', document.getElementById('supSop').value);
@@ -435,6 +440,7 @@
             localStorage.setItem('supNave', document.getElementById('supNave').value);
             localStorage.setItem('opPicoton', document.getElementById('opPicoton').value);
             localStorage.setItem('opCargador', document.getElementById('opCargador').value);
+            localStorage.setItem('comentariosInicio', document.getElementById('comentariosInicio').value);
         }
 
         function toggleCamposTermografia() {
@@ -454,34 +460,40 @@
             let registro = { id: Date.now(), equipo: eq, cps: cps };
 
             if (eq === 'Picotón') {
-                registro.val1 = document.getElementById('tFlexPic').value;
-                registro.val2 = document.getElementById('tCunaPic').value;
-                registro.val3 = document.getElementById('tTornaPic').value;
-                registro.labels = "Flex/Cuña/Torna";
+                registro.val1 = parseFloat(document.getElementById('tFlexPic').value) || 0;
+                registro.val2 = parseFloat(document.getElementById('tCunaPic').value) || 0;
+                registro.val3 = parseFloat(document.getElementById('tTornaPic').value) || 0;
             } else {
-                registro.val1 = document.getElementById('tBateaCarg').value;
-                registro.val2 = document.getElementById('tInfCarg').value;
-                registro.val3 = document.getElementById('tFlexCarg').value;
-                registro.labels = "Batea/Inf/Flex";
+                registro.val1 = parseFloat(document.getElementById('tBateaCarg').value) || 0;
+                registro.val2 = parseFloat(document.getElementById('tInfCarg').value) || 0;
+                registro.val3 = parseFloat(document.getElementById('tFlexCarg').value) || 0;
             }
 
             termografias.push(registro);
             localStorage.setItem('altonorte_termografias', JSON.stringify(termografias));
             renderizarHistorialTermografias();
-            alert('¡Termografía guardada correctamente!');
         }
 
         function renderizarHistorialTermografias() {
             const lista = document.getElementById('listaTermografias');
             if (termografias.length === 0) {
-                lista.innerHTML = '<li style="color:var(--text-muted); font-size:0.85rem;">Sin termografías registradas.</li>';
+                lista.innerHTML = '<li style="color:var(--text-muted); font-size:0.8rem;">Sin termografías ingresadas.</li>';
                 return;
             }
-            lista.innerHTML = termografias.map(t => `
+            lista.innerHTML = termografias.map((t, index) => `
                 <li class="history-item">
-                    <strong>${t.equipo} - ${t.cps}</strong> (${t.labels}): ${t.val1}°C / ${t.val2}°C / ${t.val3}°C
+                    <div>
+                        <strong>${t.equipo} (${t.cps}):</strong> ${t.val1}°C | ${t.val2}°C | ${t.val3}°C
+                    </div>
+                    <button onclick="eliminarTermografia(${index})" style="background:none; border:none; color:var(--danger-color); font-weight:bold; cursor:pointer;">❌</button>
                 </li>
             `).join('');
+        }
+
+        function eliminarTermografia(index) {
+            termografias.splice(index, 1);
+            localStorage.setItem('altonorte_termografias', JSON.stringify(termografias));
+            renderizarHistorialTermografias();
         }
 
         function previewImagen(input, targetId) {
@@ -527,8 +539,9 @@
             ciclos.push(ciclo);
             localStorage.setItem('altonorte_ciclos', JSON.stringify(ciclos));
             renderizarHistorialCiclos();
-            alert(`¡Ciclo ${ciclo.nombre} (${ciclo.cps}) guardado con éxito en el teléfono!`);
-            
+
+            alert(`¡Ciclo ${ciclo.nombre} guardado correctamente!`);
+
             document.getElementById('prevEnt').style.display = 'none';
             document.getElementById('prevSal').style.display = 'none';
             fotoEntradaBase64 = "";
@@ -538,66 +551,133 @@
         function renderizarHistorialCiclos() {
             const lista = document.getElementById('listaCiclos');
             if (ciclos.length === 0) {
-                lista.innerHTML = '<li style="color:var(--text-muted); font-size:0.85rem;">No hay ciclos ingresados todavía.</li>';
+                lista.innerHTML = '<li style="color:var(--text-muted); font-size:0.8rem;">No hay ciclos registrados aún.</li>';
                 return;
             }
-            lista.innerHTML = ciclos.map(c => `
+            lista.innerHTML = ciclos.map((c, index) => `
                 <li class="history-item">
-                    <strong>${c.cps} (${c.nombre})</strong> | Maz: ${c.tMaz} | Bloq: ${c.tBloq} | Ret Carg: ${c.tRetCarg}<br>
-                    Baldadas: ${c.baldadas} | Ton: ${c.toneladas} | Temp. Mat: ${c.tempMat}°C
+                    <div>
+                        <strong>${c.cps} (${c.nombre})</strong> - Maz: ${c.tMaz} | Ret. Carg: ${c.tRetCarg}<br>
+                        <small>Baldadas: ${c.baldadas} | Ton: ${c.toneladas} | Temp: ${c.tempMat}°C</small>
+                    </div>
+                    <button onclick="eliminarCiclo(${index})" style="background:none; border:none; color:var(--danger-color); font-weight:bold; cursor:pointer;">❌</button>
                 </li>
             `).join('');
         }
 
-        function generarExcelLocal() {
-            if (ciclos.length === 0 && termografias.length === 0) {
-                alert('No hay información suficiente para generar el reporte.');
-                return;
+        function eliminarCiclo(index) {
+            ciclos.splice(index, 1);
+            localStorage.setItem('altonorte_ciclos', JSON.stringify(ciclos));
+            renderizarHistorialCiclos();
+        }
+
+        // MOTOR REPLICADOR DE LA PLANILLA OFICIAL DE ALTONORTE
+        function generarExcelMatrizOficial() {
+            const fechaStr = document.getElementById('fechaTurno').value || "2026-10-25";
+            const turnoStr = document.getElementById('tipoTurno').value || "TB";
+            
+            // Matriz inicial vacía (filas 1 a 100)
+            let data = Array(100).fill(null).map(() => Array(8).fill(""));
+
+            // Encabezados Oficiales
+            data[0][1] = "Control  Operacional Supervisor Nave";
+            data[2][1] = `Fecha: ${fechaStr} ${turnoStr}`;
+            
+            data[3][1] = "Supervisor SOP:"; data[3][2] = document.getElementById('supSop').value;
+            data[3][3] = "Supervisor CRM:"; data[3][4] = document.getElementById('supCrm').value;
+            data[3][5] = "Operador Picotón:"; data[3][6] = document.getElementById('opPicoton').value;
+
+            data[4][1] = "Supervisor Caemin:"; data[4][2] = document.getElementById('supCaemin').value;
+            data[4][3] = "Supervisor Nave:"; data[4][4] = document.getElementById('supNave').value;
+            data[4][5] = "Operador Cargador:"; data[4][6] = document.getElementById('opCargador').value;
+
+            // Tabla 1: Actividades
+            data[6][1] = "Actividades"; data[6][2] = "Controles"; data[6][3] = "Responsable"; data[6][4] = "Estatus"; data[6][5] = "Comentarios ";
+            data[7][1] = "Control previo inicio de Actividades. \n(Inicio de Turno)";
+            data[7][2] = "Check list Operacional Cargador y Picoton";
+            data[7][3] = "Op. Maq "; data[7][4] = "✓";
+            data[7][5] = document.getElementById('comentariosInicio').value;
+
+            data[8][2] = "Asegurar condición de equipos por Caemin "; data[8][3] = "Caemin"; data[8][4] = "✓";
+            data[9][1] = "Control previo al retiro del material "; data[9][2] = "Confirmar tiempo de al menos 10 minutos desde el termino de picado del foso"; data[9][3] = "Sup. Nave"; data[9][4] = "✓"; data[9][5] = "Se evalua el ingreso inmediato de cargador, por disminucion de material en foso.";
+            data[10][2] = "Verificar visualmente que el material en el foso este sólido (no líquido)"; data[10][3] = "Sup. Nave"; data[10][4] = "✓"; data[10][5] = "No se detecta material en estado líquido.";
+            data[11][1] = "Control durante retiro y traslado de material "; data[11][2] = "Verificar que no exista presencia de llamas, humo o indicios de ignición"; data[11][3] = "Sup. Nave"; data[11][4] = "✓"; data[11][5] = "No se aprecian fosos con materiales liquidos ni presencia de llamas en equipos";
+            data[12][1] = "Control del tratamiento del material en explanada"; data[12][2] = "Asegurar que la disposición del material favorezca el enfriamiento y que este en estado sólido (no líquido)."; data[12][3] = "Sup. Nave"; data[12][4] = "✓"; data[12][5] = "Se mantiene area despejada, se realiza retiro de material de explanada";
+            data[13][2] = "Verificar que camion aljibe este disponible durante toda la actividad"; data[13][3] = "Sup. Nave"; data[13][4] = "✓"; data[13][5] = "Camión Aljibe operativo";
+
+            // Tabla 2: Termografías
+            data[15][1] = "Termografia (°C)";
+            data[16][1] = "Picoton"; data[16][2] = "Flexibles"; data[16][3] = "cuña"; data[16][4] = "tornamesa";
+
+            let termPic = termografias.filter(t => t.equipo === 'Picotón');
+            for(let i=0; i<3; i++) {
+                if(termPic[i]) {
+                    data[17+i][1] = termPic[i].cps;
+                    data[17+i][2] = termPic[i].val1;
+                    data[17+i][3] = termPic[i].val2;
+                    data[17+i][4] = termPic[i].val3;
+                } else {
+                    data[17+i][1] = `CPS-${i+2}`;
+                }
             }
 
-            const data = [
-                ["CONTROL OPERACIONAL NAVE ALTONORTE"],
-                ["Fecha", document.getElementById('fechaTurno').value, "Turno", document.getElementById('tipoTurno').value],
-                ["Sup. SOP", document.getElementById('supSop').value, "Sup. CRM", document.getElementById('supCrm').value],
-                ["Sup. CAEMIN", document.getElementById('supCaemin').value, "Sup. Nave", document.getElementById('supNave').value],
-                ["Op. Picotón", document.getElementById('opPicoton').value, "Op. Cargador", document.getElementById('opCargador').value],
-                [],
-                ["--- TERMOGRAFÍAS REGISTRADAS ---"],
-                ["Equipo", "CPS", "Lectura 1 (°C)", "Lectura 2 (°C)", "Lectura 3 (°C)"]
-            ];
+            data[21][1] = "Cargador"; data[21][2] = "Batea"; data[21][3] = "Parte inferior"; data[21][4] = "Flexibles interiores";
+            let termCarg = termografias.filter(t => t.equipo === 'Cargador');
+            for(let i=0; i<3; i++) {
+                if(termCarg[i]) {
+                    data[22+i][1] = termCarg[i].cps;
+                    data[22+i][2] = termCarg[i].val1;
+                    data[22+i][3] = termCarg[i].val2;
+                    data[22+i][4] = termCarg[i].val3;
+                } else {
+                    data[22+i][1] = `CPS-${i+2}`;
+                }
+            }
 
-            termografias.forEach(t => {
-                data.push([t.equipo, t.cps, t.val1, t.val2, t.val3]);
-            });
+            // Tabla 3: Ciclos CPS (Filas 28, 40, 52)
+            let rowOffsets = [27, 39, 51];
+            for (let i = 0; i < 3; i++) {
+                let r = rowOffsets[i];
+                let c = ciclos[i] || {
+                    cps: `CPS-${i+1}`, nombre: 'J-100',
+                    tMaz: '20:00', obsMaz: '', tBloq: '20:05', obsBloq: '',
+                    tIngPic: '20:06', obsIngPic: '', tRetPic: '20:15', obsRetPic: '',
+                    tIngCarg: '20:16', obsIngCarg: '', tRetCarg: '20:25', obsRetCarg: '',
+                    tDesb: '20:30', obsDesb: '', baldadas: 0, toneladas: 0, tempMat: 0
+                };
 
-            data.push([]);
-            data.push(["--- CICLOS OPERACIONALES Y COMENTARIOS DE DESVIACIÓN ---"]);
+                data[r][1] = "CPS"; data[r][2] = c.cps;
+                data[r+1][1] = "Ciclo"; data[r+1][2] = c.nombre;
+                data[r+2][1] = "CPS"; data[r+2][2] = "Fecha"; data[r+2][3] = "Minutos"; data[r+2][4] = "Baldadas "; data[r+2][5] = "Comentarios desviaciones";
 
-            ciclos.forEach(c => {
-                data.push([`CPS: ${c.cps}`, `Ciclo: ${c.nombre}`]);
-                data.push(["Hito Cronológico", "Hora", "Comentario / Desviación"]);
-                data.push(["Término retiro mazamorra desde CPS", c.tMaz, c.obsMaz]);
-                data.push(["Bloqueo de tapas CPS", c.tBloq, c.obsBloq]);
-                data.push(["Ingreso Picotón foso", c.tIngPic, c.obsIngPic]);
-                data.push(["Retiro Picotón foso", c.tRetPic, c.obsRetPic]);
-                data.push(["Ingreso Cargador Foso", c.tIngCarg, c.obsIngCarg]);
-                data.push(["Retiro de Cargador en foso", c.tRetCarg, c.obsRetCarg]);
-                data.push(["Desbloqueo de tapas CPS", c.tDesb, c.obsDesb]);
-                data.push(["Baldadas", c.baldadas, "Toneladas", c.toneladas, "Temp. Material (°C)", c.tempMat]);
-                data.push([]);
-            });
+                data[r+3][1] = "Termino retiro mazamorra desde CPS"; data[r+3][2] = c.tMaz; data[r+3][5] = c.obsMaz;
+                data[r+4][1] = "Bloqueo de tapas CPS"; data[r+4][2] = c.tBloq; data[r+4][5] = c.obsBloq;
+                data[r+5][1] = "Ingreso Picoton foso"; data[r+5][2] = c.tIngPic; data[r+5][5] = c.obsIngPic;
+                data[r+6][1] = "Retiro picoton foso"; data[r+6][2] = c.tRetPic; data[r+6][5] = c.obsRetPic;
+                data[r+7][1] = "Ingreso Cargador Foso"; data[r+7][2] = c.tIngCarg; data[r+7][5] = "Temperatura material retirado (°C)"; data[r+7][6] = c.tempMat;
+                data[r+8][1] = "Retiro de Cargador en foso"; data[r+8][2] = c.tRetCarg; data[r+8][4] = c.baldadas; data[r+8][5] = c.toneladas; data[r+8][6] = "Ton. ";
+                data[r+9][1] = "Desbloqueo de tapas CPS"; data[r+9][2] = c.tDesb; data[r+9][5] = c.obsDesb;
+                data[r+10][1] = "Total";
+            }
 
+            // Fotos
+            data[65][1] = `📸 FOTO ANTES DE LIMPIEZA - ${ciclos[0]?.cps || 'CPS'} (${ciclos[0]?.nombre || ''})`;
+            data[65][4] = `📸 FOTO DESPUES DE LIMPIEZA - ${ciclos[0]?.cps || 'CPS'} (${ciclos[0]?.nombre || ''})`;
+            data[79][1] = `📸 FOTO ANTES DE LIMPIEZA - ${ciclos[1]?.cps || 'CPS'} (${ciclos[1]?.nombre || ''})`;
+            data[79][4] = `📸 FOTO DESPUES DE LIMPIEZA - ${ciclos[1]?.cps || 'CPS'} (${ciclos[1]?.nombre || ''})`;
+            data[96][1] = `📸 FOTO ANTES DE LIMPIEZA - ${ciclos[2]?.cps || 'CPS'} (${ciclos[2]?.nombre || ''})`;
+            data[96][4] = `📸 FOTO DESPUES DE LIMPIEZA - ${ciclos[2]?.cps || 'CPS'} (${ciclos[2]?.nombre || ''})`;
+
+            // Generar archivo con SheetJS
             const ws = XLSX.utils.aoa_to_sheet(data);
             const wb = XLSX.utils.book_new();
-            XLSX.utils.book_append_sheet(wb, ws, "Control Operacional");
+            XLSX.utils.book_append_sheet(wb, ws, `${fechaStr} ${turnoStr}`);
 
-            const fecha = document.getElementById('fechaTurno').value;
-            const turno = document.getElementById('tipoTurno').value;
-            XLSX.writeFile(wb, `Control_Nave_${fecha}_${turno}.xlsx`);
+            XLSX.writeFile(wb, `Control_Nave_${fechaStr}_${turnoStr}.xlsx`);
         }
 
         function limpiarMemoria() {
-            if (confirm('¿Deseas limpiar todos los datos guardados de este turno?')) {
+            if (confirm('¿Deseas vaciar todos los registros del turno?')) {
                 localStorage.removeItem('altonorte_ciclos');
                 localStorage.removeItem('altonorte_termografias');
                 ciclos = [];
